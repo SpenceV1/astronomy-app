@@ -1,0 +1,21 @@
+ <fieldset class="form-group">
+    <legend>{{ field.humanReadableText }}</legend>
+    <div class="form-group">
+        <label for="answer">Answer</label>
+        <input type="text" class="form-control"
+               ng-disabled="!editable"
+               ng-model="model.answer"
+               placeholder="Number in Scientific Notation">
+    </div>
+     <div class="help-block">
+        Please type numbers in scientific notation Ex: 1.2e10
+     </div>
+    <div class="form-group">
+        <label for="unit">Unit</label>
+        <select class="form-control" ng-model="model.unit" ng-disabled="!editable">
+            <option ng-repeat="option in field.options" value="{{option.id}}">
+                {{ option.humanReadableText }}
+            </option>
+        </select>
+    </div>
+</fieldset>

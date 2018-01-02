@@ -1,0 +1,17 @@
+<div class="appHome">
+    <child-navigation class="homeNav"></child-navigation>
+    <div class="homeBody">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="page-header">
+                    {{ course.courseName }}
+                    </h1>
+                    <div class="row">
+                        <div class="col-md-12" ui-view="childContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
