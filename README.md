@@ -3,7 +3,7 @@
 ## University of Michigan Dearborn Senior Design Fall 2017 - Winter 2018
 
 Contributors:
-* Kye Drewno
+* Kyle Drewno
 * Corey Knick
 * Mohamed Saleh
 * Spencer Vierk
