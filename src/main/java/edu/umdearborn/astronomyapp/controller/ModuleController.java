@@ -35,6 +35,7 @@ import edu.umdearborn.astronomyapp.entity.Course;
 import edu.umdearborn.astronomyapp.entity.Module;
 import edu.umdearborn.astronomyapp.entity.MultipleChoiceQuestion;
 import edu.umdearborn.astronomyapp.entity.NumericQuestion;
+import edu.umdearborn.astronomyapp.entity.Page;
 import edu.umdearborn.astronomyapp.entity.PageItem;
 import edu.umdearborn.astronomyapp.entity.PageItem.PageItemType;
 import edu.umdearborn.astronomyapp.entity.Question;
@@ -275,6 +276,25 @@ public class ModuleController {
 
     return moduleService.deletePageItem(moduleId, itemId);
   }
+  
+  @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/item/{itemId}",
+	      method = PUT)
+	  public PageItem updatePageItem(@PathVariable("courseId") String courseId,
+	      @PathVariable("moduleId") String moduleId, @PathVariable("itemId") String itemId,
+	      @Valid @RequestBody PageItem pageItem, Errors errors,
+	      HttpSession session, Principal principal) {
+	  
+	    acl.enforceInCourse(principal.getName(), courseId);
+	    acl.enforeceModuleInCourse(courseId, moduleId);
+	    //acl.enforceModuleNotOpen(moduleId);
+	    pageItem.setId(itemId);
+	    
+	    //may need to set pageid etc to ensure they are not updated?
+	    
+	    //System.out.println("Class: " + pageItem.getClass().getName());
+	    
+	    return moduleService.updatePageItem(pageItem);
+	  }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/grades",
       method = GET)

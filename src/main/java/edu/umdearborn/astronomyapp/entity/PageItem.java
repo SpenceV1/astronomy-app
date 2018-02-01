@@ -23,6 +23,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.*;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.umdearborn.astronomyapp.util.json.View;
@@ -34,6 +37,15 @@ import edu.umdearborn.astronomyapp.util.json.View;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "pageItemType")
 @DiscriminatorValue("TEXT")
+
+@JsonTypeInfo(use = Id.NAME, include = As.EXISTING_PROPERTY, property = "questionType",defaultImpl = PageItem.class, visible = true)
+@JsonSubTypes({
+	@JsonSubTypes.Type(value = MultipleChoiceQuestion.class, name = "MULTIPLE_CHOICE"),
+	@JsonSubTypes.Type(value = NumericQuestion.class, name = "NUMERIC"),
+	@JsonSubTypes.Type(value = Question.class, name = "FREE_RESPONSE"),
+	@JsonSubTypes.Type(value = Question.class, name = "IMAGE")
+})
+
 public class PageItem extends AbstractGeneratedId {
 
   public static enum PageItemType {

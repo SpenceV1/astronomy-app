@@ -59,6 +59,12 @@ public class ModuleServiceImpl implements ModuleService {
     entityManager.merge(module);
     return module;
   }
+  
+  @Override
+  public PageItem updatePageItem(PageItem item) {
+    entityManager.merge(item);
+    return item;
+  }
 
   @Override
   public List<Module> getModules(String courseId, boolean showVisibleOnly) {
