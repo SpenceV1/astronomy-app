@@ -20,6 +20,8 @@ public interface ModuleService {
   public JsonDecorator<Module> getModuleDetails(String moduleId);
 
   public List<PageItem> getPage(String moduleId, int pageNumber);
+  
+  public List<PageItem> getPageQuestions(String moduleId, int pageNumber);
 
   public BigDecimal getMaxPoints(String moduleId);
 

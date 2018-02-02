@@ -184,6 +184,19 @@ public class ModuleController {
 
     return moduleService.getPage(moduleId, pageNumber);
   }
+  
+  @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/questions", params = "page",
+	      method = GET)
+	  public List<PageItem> getModulePageQuestions(@PathVariable("courseId") String courseId,
+	      @PathVariable("moduleId") String moduleId,
+	      @RequestParam(name = "page", defaultValue = "1") int pageNumber, HttpSession session,
+	      Principal principal) {
+
+	    acl.enforceInCourse(principal.getName(), courseId);
+	    acl.enforeceModuleInCourse(courseId, moduleId);
+
+	    return moduleService.getPageQuestions(moduleId, pageNumber);
+  }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}", params = "page",
       method = DELETE)

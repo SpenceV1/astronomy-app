@@ -8,6 +8,7 @@ import static edu.umdearborn.astronomyapp.entity.Question.QuestionType.NUMERIC;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -119,6 +120,32 @@ public class ModuleServiceImpl implements ModuleService {
 
   }
 
+  @Override
+  public List<PageItem> getPageQuestions(String moduleId, int pageNumber) {
+
+    TypedQuery<PageItem> textPageItemQuery = entityManager.createQuery(
+        "select i from PageItem i join i.page p join p.module m where m.id = :moduleId and "
+            + "p.order = :pageNumber",
+        PageItem.class);
+    textPageItemQuery.setParameter("moduleId", moduleId).setParameter("pageNumber", pageNumber);
+    List<PageItem> result = textPageItemQuery.getResultList();
+
+    if (!ResultListUtil.hasResult(result)) {
+      result = new ArrayList<>();
+    }
+    
+    List<PageItem> reorder = result.stream()
+    						.filter((question) -> question.getOrder() >= 6)
+    						.sorted(Comparator.comparing(PageItem::getOrder).reversed())
+    						.collect(Collectors.toList());
+    
+    for(PageItem p : reorder) {
+    	System.out.println(p.getOrder());
+    	//p.setOrder(p.getOrder() + 1);
+    }
+    return reorder;
+  }
+  
   @Override
   public List<PageItem> getPage(String moduleId, int pageNumber) {
 
