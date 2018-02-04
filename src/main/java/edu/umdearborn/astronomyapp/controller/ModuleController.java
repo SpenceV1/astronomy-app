@@ -185,17 +185,17 @@ public class ModuleController {
     return moduleService.getPage(moduleId, pageNumber);
   }
   
-  @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/questions", params = "page",
-	      method = GET)
-	  public List<PageItem> getModulePageQuestions(@PathVariable("courseId") String courseId,
-	      @PathVariable("moduleId") String moduleId,
-	      @RequestParam(name = "page", defaultValue = "1") int pageNumber, HttpSession session,
+  @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/item/{itemId}/reorder", params = "newOrder",
+	      method = POST)
+	  public void getModulePageQuestions(@PathVariable("courseId") String courseId,
+	      @PathVariable("moduleId") String moduleId, @PathVariable("itemId") String itemId,
+	      @RequestParam(name = "newOrder") int newOrder, HttpSession session,
 	      Principal principal) {
 
 	    acl.enforceInCourse(principal.getName(), courseId);
 	    acl.enforeceModuleInCourse(courseId, moduleId);
 
-	    return moduleService.getPageQuestions(moduleId, pageNumber);
+	    moduleService.reorderPageItem(itemId, newOrder);
   }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}", params = "page",

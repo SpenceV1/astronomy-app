@@ -121,29 +121,84 @@ public class ModuleServiceImpl implements ModuleService {
   }
 
   @Override
-  public List<PageItem> getPageQuestions(String moduleId, int pageNumber) {
+  public void reorderPageItem(String itemId, int newOrder) {
+	  TypedQuery<PageItem> getPageItemQuery = entityManager.createQuery(
+		        "select i from PageItem i where i.id = :itemId",
+		        PageItem.class);
+			getPageItemQuery.setParameter("itemId", itemId);
+		    List<PageItem> pageItemResult = getPageItemQuery.getResultList();
+	
+		    PageItem pageItem = null;
+		    if (ResultListUtil.hasResult(pageItemResult)) {
+		    	pageItem = pageItemResult.get(0);
+		      }
+	
+		//valid page, valid new position for page
+	    if(pageItem != null && newOrder > 0) {
+		  int case1 = 0;
+		  int case2 = 0;
+		  int shift = 0;
+		  
+		  if(pageItem.getOrder() > newOrder) {
+			  case1 = newOrder - 1;
+			  case2 = pageItem.getOrder();
+			  shift = 1;
+		  }else if(pageItem.getOrder() < newOrder) {
+			  case1 = pageItem.getOrder();
+			  case2 = newOrder;
+			  shift = -1;
+		  }
+			    
+		  TypedQuery<PageItem> shiftBlockQuery = entityManager.createQuery(
+			        "select i from PageItem i where i.order > :case1 and i.order < :case2 and i.page.id = :pageId order by i.order asc",
+			        PageItem.class)
+				  .setParameter("case1", case1).setParameter("case2", case2).setParameter("pageId", pageItem.getPage().getId());
+			    List<PageItem> shiftItems = shiftBlockQuery.getResultList();
+		  
+		  if(shiftItems.size() <= 0) {
+			  //nothing to reorder, must be the case order==newOrder or order is last item and trying to move down
+			  System.out.println("Nothing to do");
+			  return;
+		  }
+			    
+		  //move pageItem out of the way (max order number + 1)
+		  entityManager
+          .createQuery("update PageItem i set i.order = "
+        	  + "(select max(pi.order) from PageItem pi where pi.page.id = :pageId) + 1 "
+              + "where i.id = :itemId")
+          .setParameter("itemId", itemId).setParameter("pageId", pageItem.getPage().getId())
+          .executeUpdate();
+		  entityManager.flush();
+		  
+		  List<PageItem> reorder = shiftItems;
+		  if(pageItem.getOrder() > newOrder) {
+			  //avoid duplicate order numbers
+			  reorder = shiftItems.stream()
+	      						.sorted(Comparator.comparing(PageItem::getOrder).reversed())
+	      						.collect(Collectors.toList());
+		  }else {
+			  newOrder --; //make sure item is above selected
+			  if(shiftItems.size() > 0 && shiftItems.get(shiftItems.size() - 1).getOrder() < newOrder) {
+				  //any number above maximum order number will reset to last item order
+				  System.out.println("Moving as last element");
+				  newOrder = shiftItems.get(shiftItems.size() - 1).getOrder();
+			  }
+		  }
 
-    TypedQuery<PageItem> textPageItemQuery = entityManager.createQuery(
-        "select i from PageItem i join i.page p join p.module m where m.id = :moduleId and "
-            + "p.order = :pageNumber",
-        PageItem.class);
-    textPageItemQuery.setParameter("moduleId", moduleId).setParameter("pageNumber", pageNumber);
-    List<PageItem> result = textPageItemQuery.getResultList();
-
-    if (!ResultListUtil.hasResult(result)) {
-      result = new ArrayList<>();
-    }
-    
-    List<PageItem> reorder = result.stream()
-    						.filter((question) -> question.getOrder() >= 6)
-    						.sorted(Comparator.comparing(PageItem::getOrder).reversed())
-    						.collect(Collectors.toList());
-    
-    for(PageItem p : reorder) {
-    	System.out.println(p.getOrder());
-    	//p.setOrder(p.getOrder() + 1);
-    }
-    return reorder;
+		  //shift certain pageItems up or down one
+		  for(PageItem p : reorder) {
+		    	p.setOrder(p.getOrder() + shift);
+		    	entityManager.flush();
+		    }
+		  
+		  //move pageItem to new position
+		  entityManager
+          .createQuery("update PageItem i set i.order = :newOrder "
+              + "where i.id = :itemId")
+          .setParameter("itemId", itemId).setParameter("newOrder", newOrder)
+          .executeUpdate();
+		  entityManager.flush();
+	  }
   }
   
   @Override
