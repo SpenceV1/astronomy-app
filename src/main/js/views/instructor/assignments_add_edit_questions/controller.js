@@ -73,7 +73,7 @@ Controller.prototype.addQuestion = function(){
     }
 };
 
-Controller.prototype.viewQuestion = function(questionData){
+Controller.prototype.editQuestion = function(questionData){
     var self = this;
     var questionType = ("questionType" in questionData ? questionData.questionType : questionData.pageItemType);
     var params = {
