@@ -121,7 +121,7 @@ public class ModuleServiceImpl implements ModuleService {
   }
 
   @Override
-  public void reorderPageItem(String itemId, int newOrder) {
+  public List<PageItem> reorderPageItem(String itemId, int newOrder) {
 	  TypedQuery<PageItem> getPageItemQuery = entityManager.createQuery(
 		        "select i from PageItem i where i.id = :itemId",
 		        PageItem.class);
@@ -155,50 +155,56 @@ public class ModuleServiceImpl implements ModuleService {
 				  .setParameter("case1", case1).setParameter("case2", case2).setParameter("pageId", pageItem.getPage().getId());
 			    List<PageItem> shiftItems = shiftBlockQuery.getResultList();
 		  
-		  if(shiftItems.size() <= 0) {
+		  if(shiftItems.size() > 0) {
+			    
+			  //move pageItem out of the way (max order number + 1)
+			  entityManager
+	          .createQuery("update PageItem i set i.order = "
+	        	  + "(select max(pi.order) from PageItem pi where pi.page.id = :pageId) + 1 "
+	              + "where i.id = :itemId")
+	          .setParameter("itemId", itemId).setParameter("pageId", pageItem.getPage().getId())
+	          .executeUpdate();
+			  entityManager.flush();
+			  
+			  List<PageItem> reorder = shiftItems;
+			  if(pageItem.getOrder() > newOrder) {
+				  //avoid duplicate order numbers
+				  reorder = shiftItems.stream()
+		      						.sorted(Comparator.comparing(PageItem::getOrder).reversed())
+		      						.collect(Collectors.toList());
+			  }else {
+				  newOrder --; //make sure item is above selected
+				  if(shiftItems.size() > 0 && shiftItems.get(shiftItems.size() - 1).getOrder() < newOrder) {
+					  //any number above maximum order number will reset to last item order
+					  System.out.println("Moving as last element");
+					  newOrder = shiftItems.get(shiftItems.size() - 1).getOrder();
+				  }
+			  }
+	
+			  //shift certain pageItems up or down one
+			  for(PageItem p : reorder) {
+			    	p.setOrder(p.getOrder() + shift);
+			    	entityManager.flush();
+			    }
+			  
+			  //move pageItem to new position
+			  entityManager
+	          .createQuery("update PageItem i set i.order = :newOrder "
+	              + "where i.id = :itemId")
+	          .setParameter("itemId", itemId).setParameter("newOrder", newOrder)
+	          .executeUpdate();
+			  entityManager.flush();
+		  } else {
 			  //nothing to reorder, must be the case order==newOrder or order is last item and trying to move down
 			  System.out.println("Nothing to do");
-			  return;
 		  }
-			    
-		  //move pageItem out of the way (max order number + 1)
-		  entityManager
-          .createQuery("update PageItem i set i.order = "
-        	  + "(select max(pi.order) from PageItem pi where pi.page.id = :pageId) + 1 "
-              + "where i.id = :itemId")
-          .setParameter("itemId", itemId).setParameter("pageId", pageItem.getPage().getId())
-          .executeUpdate();
-		  entityManager.flush();
-		  
-		  List<PageItem> reorder = shiftItems;
-		  if(pageItem.getOrder() > newOrder) {
-			  //avoid duplicate order numbers
-			  reorder = shiftItems.stream()
-	      						.sorted(Comparator.comparing(PageItem::getOrder).reversed())
-	      						.collect(Collectors.toList());
-		  }else {
-			  newOrder --; //make sure item is above selected
-			  if(shiftItems.size() > 0 && shiftItems.get(shiftItems.size() - 1).getOrder() < newOrder) {
-				  //any number above maximum order number will reset to last item order
-				  System.out.println("Moving as last element");
-				  newOrder = shiftItems.get(shiftItems.size() - 1).getOrder();
-			  }
-		  }
-
-		  //shift certain pageItems up or down one
-		  for(PageItem p : reorder) {
-		    	p.setOrder(p.getOrder() + shift);
-		    	entityManager.flush();
-		    }
-		  
-		  //move pageItem to new position
-		  entityManager
-          .createQuery("update PageItem i set i.order = :newOrder "
-              + "where i.id = :itemId")
-          .setParameter("itemId", itemId).setParameter("newOrder", newOrder)
-          .executeUpdate();
-		  entityManager.flush();
 	  }
+	    
+	    TypedQuery<PageItem> itemsQuery = entityManager.createQuery(
+		        "select i from PageItem i where i.page.id = :pageId order by i.order asc",
+		        PageItem.class).setParameter("pageId", pageItem.getPage().getId());
+		    List<PageItem> returnItems = itemsQuery.getResultList();
+		    return returnItems;
   }
   
   @Override

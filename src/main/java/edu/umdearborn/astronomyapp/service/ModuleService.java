@@ -21,7 +21,7 @@ public interface ModuleService {
 
   public List<PageItem> getPage(String moduleId, int pageNumber);
   
-  public void reorderPageItem(String itemId, int newOrder);
+  public List<PageItem> reorderPageItem(String itemId, int newOrder);
 
   public BigDecimal getMaxPoints(String moduleId);
 

@@ -42,7 +42,17 @@ Controller.prototype.submit = function(payload){
            self.error = "ERROR creating a new question";
         });
     } else {
-        self.error = "ERROR updating the question";
+    	self._QuestionService.editQuestion(self.courseId, self.moduleId, self.questionData.id, payload)
+        .then(function(payload){
+        	var params = {
+                    moduleId : self.moduleId,
+                    pageNum : self.pageNum,
+                    created_updated : true
+                }
+        	self._$state.go('app.course.assignments_add_edit_questions', params);
+        }, function(err){
+           self.error = "ERROR editing question";
+        });
     }
 };
 
