@@ -73,7 +73,7 @@ Controller.prototype.addQuestion = function(){
     }
 };
 
-Controller.prototype.editQuestion = function(questionData){
+Controller.prototype.viewQuestion = function(questionData){
     var self = this;
     var questionType = ("questionType" in questionData ? questionData.questionType : questionData.pageItemType);
     var params = {
@@ -85,6 +85,12 @@ Controller.prototype.editQuestion = function(questionData){
     };
     self._$state.go('app.course.assignments_add_edit_question', params, {reload : true});
 }
+
+Controller.prototype.dragControlListeners = {
+        orderChanged: function (event) {
+            console.log('orderChanged : ', event.source.index, 'to', event.dest.index);
+        }
+    };
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);

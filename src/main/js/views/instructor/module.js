@@ -16,5 +16,6 @@ module.exports = angular.module('app.views.instructor', [
     assignmentsAddEditPages.name,
     assignmentsAddEditQuestions.name,
     assignmentsAddEditQuestion.name,
-    assignmentGroupsController.name
+    assignmentGroupsController.name,
+    'as.sortable'
 ]);

@@ -39,9 +39,9 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody>
-            <tr ng-repeat="question in questionsEditCtrl.questions | orderBy:'order'">
-                <td><span class="glyphicon glyphicon-menu-hamburger"></span></td>
+        <tbody data-as-sortable="questionsEditCtrl.dragControlListeners" ng-model="questionsEditCtrl.questions">
+            <tr ng-repeat="question in questionsEditCtrl.questions" as-sortable-item>
+                <td><span as-sortable-item-handle class="glyphicon glyphicon-menu-hamburger"></span></td>
                 <td> {{ question.humanReadableText | limitTo:10 }}</td>
                 <td> {{ question.pageItemType }}</td>
                 <td> {{ question.questionType }}</td>
