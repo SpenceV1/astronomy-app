@@ -3,3 +3,30 @@
 .pointer-cursor {
     cursor: pointer;
 }
+ tr.as-sortable-item,
+tr.as-sortable-placeholder {
+    display: table-row !important;
+}
+
+tbody.as-sortable-drag,
+tbody.as-sortable-dragging {
+    display: table !important;
+    left: 10em !important;
+}
+   
+.as-sortable-item-handle {
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+}
+
+.as-sortable-drag {
+    position: absolute;
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    box-shadow: 5px 5px 5px grey;
+    pointer-events: none;
+    z-index: 9999;
+    background-color: #F8F8F8;
+	margin-left: 2em;
+}
