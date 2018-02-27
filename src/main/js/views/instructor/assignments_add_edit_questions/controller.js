@@ -16,8 +16,6 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this.questions = [];
     this.init();
     this.scope = $scope;
-    $scope.controller = this;
-    this.setDragControlListeners();
 };
 
 Controller.prototype.init = function(){
@@ -61,6 +59,17 @@ Controller.prototype.createPagesStruct = function(number){
 }
 
 
+
+Controller.prototype.reorderQuestion = function(itemId, newOrder) {
+    var self = this;
+    self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
+    .then(function(payload){
+        self.questions = payload;
+    }, function(err){
+        self.error = "ERROR getting questions";
+    });
+};
+
 Controller.prototype.addQuestion = function(){
     var self = this;
     if(self.selectedQuestionType){
@@ -76,7 +85,7 @@ Controller.prototype.addQuestion = function(){
     }
 };
 
-Controller.prototype.viewQuestion = function(questionData){
+Controller.prototype.editQuestion = function(questionData){
     var self = this;
     var questionType = ("questionType" in questionData ? questionData.questionType : questionData.pageItemType);
     var params = {
@@ -87,38 +96,6 @@ Controller.prototype.viewQuestion = function(questionData){
         questionData : questionData
     };
     self._$state.go('app.course.assignments_add_edit_question', params, {reload : true});
-};
-
-
-/*Controller.prototype.setDragControlListeners = function() {
-	this.scope.dragControlListeners = {
-        orderChanged: function (event) {
-        	var scope = event.source.itemScope;
-        	scope.controller.testing123();
-        	//scope.controller.changed();
-        	
-        }
-    };
-};*/
-
-Controller.prototype.setDragControlListeners = function() {
-    this.scope.dragControlListeners = {
-        orderChanged: function(event) {
-          var scope = event.source.itemScope;
-          scope.controller.testing123();
-          
-          var sourceIndex = event.source.index;
-          var destinationIndex = event.dest.index;
-          
-          console.log("Moving #" + sourceIndex + " to #" + destinationIndex);
-          //scope.fakeReorder(scope.items, sourceIndex, destinationIndex);
-        }
-
-    };
-};
-
-Controller.prototype.testing123 = function() {
-	console.log("works");
 };
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
