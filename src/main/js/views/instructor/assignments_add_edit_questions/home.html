@@ -39,7 +39,8 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody data-as-sortable="dragControlListeners" ng-model="questionsEditCtrl.questions">
+        <tbody id="qtable" data-as-sortable="questionsEditCtrl.dragControlListeners" ng-model="questionsEditCtrl.questions"
+         ng-if="questionsEditCtrl.dragControlListeners.orderChanged" ng-init="questionsEditCtrl.getQuestions()">
             <tr ng-repeat="question in questionsEditCtrl.questions" as-sortable-item>
                 <td><span as-sortable-item-handle class="glyphicon glyphicon-menu-hamburger"></span></td>
                 <td> {{ question.humanReadableText | limitTo:10 }}</td>

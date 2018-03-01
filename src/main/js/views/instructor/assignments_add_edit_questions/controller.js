@@ -16,8 +16,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this.questions = [];
     this.init();
     this.scope = $scope;
-    $scope.controller = this;
-    this.setDragControlListeners();
+    
 };
 
 Controller.prototype.init = function(){
@@ -89,37 +88,6 @@ Controller.prototype.viewQuestion = function(questionData){
     self._$state.go('app.course.assignments_add_edit_question', params, {reload : true});
 };
 
-
-/*Controller.prototype.setDragControlListeners = function() {
-	this.scope.dragControlListeners = {
-        orderChanged: function (event) {
-        	var scope = event.source.itemScope;
-        	scope.controller.testing123();
-        	//scope.controller.changed();
-        	
-        }
-    };
-};*/
-
-Controller.prototype.setDragControlListeners = function() {
-    this.scope.dragControlListeners = {
-        orderChanged: function(event) {
-          var scope = event.source.itemScope;
-          scope.controller.testing123();
-          
-          var sourceIndex = event.source.index;
-          var destinationIndex = event.dest.index;
-          
-          console.log("Moving #" + sourceIndex + " to #" + destinationIndex);
-          //scope.fakeReorder(scope.items, sourceIndex, destinationIndex);
-        }
-
-    };
-};
-
-Controller.prototype.testing123 = function() {
-	console.log("works");
-};
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);
