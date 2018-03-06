@@ -20,12 +20,16 @@ public interface ModuleService {
   public JsonDecorator<Module> getModuleDetails(String moduleId);
 
   public List<PageItem> getPage(String moduleId, int pageNumber);
+  
+  public List<PageItem> reorderPageItem(String itemId, int newOrder);
 
   public BigDecimal getMaxPoints(String moduleId);
 
   public void deletePage(String moduleId, int pageNumber);
 
   public PageItem createPageItem(PageItem item, String moduleId, int pageNum);
+  
+  public PageItem updatePageItem(PageItem item);
 
   public List<PageItem> deletePageItem(String moduleId, String pageItemId);
 
