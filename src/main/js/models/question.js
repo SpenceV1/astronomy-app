@@ -61,6 +61,26 @@ Service.prototype.addQuestion = function(courseId, moduleId, pageNum, payload){
           });
 };
 
+//Purpose: Edit question for the assignment
+//Params: courseId - String, moduleId - String, pageNum - string
+Service.prototype.editQuestion = function(courseId, moduleId, itemId, payload){
+  var self = this;
+  var config = self.getConfig();
+  
+  var url = self._appSettings.API.basePath
+  + '/rest/instructor/course/' + courseId
+  +'/module/' + moduleId
+  +'/item/' + itemId;
+  
+  ///course/{courseId}/module/{moduleId}/item/{itemId}
+  console.log(payload);
+  return this._$http
+        .put(url, payload, config)
+        .then(function (res) {
+          return res.data;
+        });
+};
+
 //Purpose: Drop a question from the assignment
 //Params: courseId - String, moduleId - String, itemId = String
 Service.prototype.dropQuestion = function(courseId, moduleId, itemId){
@@ -202,6 +222,24 @@ Service.prototype.getUrl = function(url){
     } else if (user.roles.indexOf(self.userRoles.instructor) != -1){
         return url[self.userRoles.instructor];
     }
+};
+
+//Update order of questions in assignment
+Service.prototype.reorderQuestion = function(courseId, moduleId, itemId, newOrder){
+    var self = this;
+    var config = self.getConfig();
+
+    var url = self._appSettings.API.basePath
+    + '/rest/instructor/course/'+ courseId +'/module/' + moduleId
+    + '/item/' + itemId + '/reorder';
+    
+    config.params.newOrder = newOrder;
+    
+    return this._$http
+          .post(url, null, config)
+          .then(function (res) {
+            return res.data;
+          });
 };
 
 module.exports = angular.module('app.models.question', [
