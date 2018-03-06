@@ -15,11 +15,6 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this.selectedQuestionType = "MULTIPLE_CHOICE";
     this.questions = [];
     this.init();
-    this.scope = $scope;
-<<<<<<< HEAD
-    
-=======
->>>>>>> 7b76659a68f450c50467dad0c5c1c8645164750c
 };
 
 Controller.prototype.init = function(){
@@ -63,17 +58,6 @@ Controller.prototype.createPagesStruct = function(number){
 }
 
 
-
-Controller.prototype.reorderQuestion = function(itemId, newOrder) {
-    var self = this;
-    self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
-    .then(function(payload){
-        self.questions = payload;
-    }, function(err){
-        self.error = "ERROR getting questions";
-    });
-};
-
 Controller.prototype.addQuestion = function(){
     var self = this;
     if(self.selectedQuestionType){
@@ -89,7 +73,7 @@ Controller.prototype.addQuestion = function(){
     }
 };
 
-Controller.prototype.editQuestion = function(questionData){
+Controller.prototype.viewQuestion = function(questionData){
     var self = this;
     var questionType = ("questionType" in questionData ? questionData.questionType : questionData.pageItemType);
     var params = {
@@ -100,11 +84,7 @@ Controller.prototype.editQuestion = function(questionData){
         questionData : questionData
     };
     self._$state.go('app.course.assignments_add_edit_question', params, {reload : true});
-};
+}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 7b76659a68f450c50467dad0c5c1c8645164750c
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);

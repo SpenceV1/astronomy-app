@@ -8,7 +8,6 @@ import static edu.umdearborn.astronomyapp.entity.Question.QuestionType.NUMERIC;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -59,12 +58,6 @@ public class ModuleServiceImpl implements ModuleService {
   public Module updateModule(Module module) {
     entityManager.merge(module);
     return module;
-  }
-  
-  @Override
-  public PageItem updatePageItem(PageItem item) {
-    entityManager.merge(item);
-    return item;
   }
 
   @Override
@@ -120,93 +113,6 @@ public class ModuleServiceImpl implements ModuleService {
 
   }
 
-  @Override
-  public List<PageItem> reorderPageItem(String itemId, int newOrder) {
-	  TypedQuery<PageItem> getPageItemQuery = entityManager.createQuery(
-		        "select i from PageItem i where i.id = :itemId",
-		        PageItem.class);
-			getPageItemQuery.setParameter("itemId", itemId);
-		    List<PageItem> pageItemResult = getPageItemQuery.getResultList();
-	
-		    PageItem pageItem = null;
-		    if (ResultListUtil.hasResult(pageItemResult)) {
-		    	pageItem = pageItemResult.get(0);
-		      }
-	
-		//valid page, valid new position for page
-	    if(pageItem != null && newOrder > 0) {
-		  int case1 = 0;
-		  int case2 = 0;
-		  int shift = 0;
-		  
-		  if(pageItem.getOrder() > newOrder) {
-			  case1 = newOrder - 1;
-			  case2 = pageItem.getOrder();
-			  shift = 1;
-		  }else if(pageItem.getOrder() < newOrder) {
-			  case1 = pageItem.getOrder();
-			  case2 = newOrder;
-			  shift = -1;
-		  }
-			    
-		  TypedQuery<PageItem> shiftBlockQuery = entityManager.createQuery(
-			        "select i from PageItem i where i.order > :case1 and i.order < :case2 and i.page.id = :pageId order by i.order asc",
-			        PageItem.class)
-				  .setParameter("case1", case1).setParameter("case2", case2).setParameter("pageId", pageItem.getPage().getId());
-			    List<PageItem> shiftItems = shiftBlockQuery.getResultList();
-		  
-		  if(shiftItems.size() > 0) {
-			    
-			  //move pageItem out of the way (max order number + 1)
-			  entityManager
-	          .createQuery("update PageItem i set i.order = "
-	        	  + "(select max(pi.order) from PageItem pi where pi.page.id = :pageId) + 1 "
-	              + "where i.id = :itemId")
-	          .setParameter("itemId", itemId).setParameter("pageId", pageItem.getPage().getId())
-	          .executeUpdate();
-			  entityManager.flush();
-			  
-			  List<PageItem> reorder = shiftItems;
-			  if(pageItem.getOrder() > newOrder) {
-				  //avoid duplicate order numbers
-				  reorder = shiftItems.stream()
-		      						.sorted(Comparator.comparing(PageItem::getOrder).reversed())
-		      						.collect(Collectors.toList());
-			  }else {
-				  newOrder --; //make sure item is above selected
-				  if(shiftItems.size() > 0 && shiftItems.get(shiftItems.size() - 1).getOrder() < newOrder) {
-					  //any number above maximum order number will reset to last item order
-					  System.out.println("Moving as last element");
-					  newOrder = shiftItems.get(shiftItems.size() - 1).getOrder();
-				  }
-			  }
-	
-			  //shift certain pageItems up or down one
-			  for(PageItem p : reorder) {
-			    	p.setOrder(p.getOrder() + shift);
-			    	entityManager.flush();
-			    }
-			  
-			  //move pageItem to new position
-			  entityManager
-	          .createQuery("update PageItem i set i.order = :newOrder "
-	              + "where i.id = :itemId")
-	          .setParameter("itemId", itemId).setParameter("newOrder", newOrder)
-	          .executeUpdate();
-			  entityManager.flush();
-		  } else {
-			  //nothing to reorder, must be the case order==newOrder or order is last item and trying to move down
-			  System.out.println("Nothing to do");
-		  }
-	  }
-	    
-	    TypedQuery<PageItem> itemsQuery = entityManager.createQuery(
-		        "select i from PageItem i where i.page.id = :pageId order by i.order asc",
-		        PageItem.class).setParameter("pageId", pageItem.getPage().getId());
-		    List<PageItem> returnItems = itemsQuery.getResultList();
-		    return returnItems;
-  }
-  
   @Override
   public List<PageItem> getPage(String moduleId, int pageNumber) {
 
