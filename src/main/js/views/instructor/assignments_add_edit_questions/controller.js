@@ -63,7 +63,6 @@ Controller.prototype.reorderQuestion = function(itemId, newOrder) {
     var self = this;
     self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
     .then(function(payload){
-    	
         self.questions = payload;
     }, function(err){
         self.error = "ERROR getting questions";
