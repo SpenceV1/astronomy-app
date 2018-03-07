@@ -58,6 +58,18 @@ Controller.prototype.createPagesStruct = function(number){
 }
 
 
+
+Controller.prototype.reorderQuestion = function(itemId, newOrder) {
+    var self = this;
+    self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
+    .then(function(payload){
+    	
+        self.questions = payload;
+    }, function(err){
+        self.error = "ERROR getting questions";
+    });
+};
+
 Controller.prototype.addQuestion = function(){
     var self = this;
     if(self.selectedQuestionType){
@@ -84,7 +96,16 @@ Controller.prototype.editQuestion = function(questionData){
         questionData : questionData
     };
     self._$state.go('app.course.assignments_add_edit_question', params, {reload : true});
-}
+};
+
+Controller.prototype.dropped = function(event, index, item) {
+    // Return false here to cancel drop. Return true if you insert the item yourself.
+    //this.callTest();
+    //console.log("works");
+	var self = this;
+	self.reorderQuestion(item.id, index + 1);
+    return item;
+};
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);

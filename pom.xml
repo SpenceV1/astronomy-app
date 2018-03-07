@@ -5,7 +5,7 @@
 	<artifactId>umd-astronomy-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>UMD Astronomy Web Application</name>
-	<description>Web application for UMD Astrology department to create and use learning modules for group assignements</description>
+	<description>Web application for UMD Astronomy department to create and use learning modules for group assignements</description>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
@@ -22,8 +22,8 @@
 		<commons-csv.version>1.4</commons-csv.version>
 	</properties>
 	<dependencies>
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-devtools</artifactId> 
-			</dependency> -->
+		<dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-devtools</artifactId> 
+			</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -53,11 +53,11 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${commons-lang3.version}</version>
 		</dependency>
-		<dependency>
+		<!--  <dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
