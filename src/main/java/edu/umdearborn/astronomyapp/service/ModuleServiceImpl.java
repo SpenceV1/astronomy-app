@@ -199,7 +199,7 @@ public class ModuleServiceImpl implements ModuleService {
 			  System.out.println("Nothing to do");
 		  }
 	  }
-	    
+	    entityManager.flush();
 	    TypedQuery<PageItem> itemsQuery = entityManager.createQuery(
 		        "select i from PageItem i where i.page.id = :pageId order by i.order asc",
 		        PageItem.class).setParameter("pageId", pageItem.getPage().getId());

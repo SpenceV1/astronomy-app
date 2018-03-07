@@ -15,11 +15,6 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this.selectedQuestionType = "MULTIPLE_CHOICE";
     this.questions = [];
     this.init();
-    this.scope = $scope;
-<<<<<<< HEAD
-    
-=======
->>>>>>> 7b76659a68f450c50467dad0c5c1c8645164750c
 };
 
 Controller.prototype.init = function(){
@@ -68,6 +63,7 @@ Controller.prototype.reorderQuestion = function(itemId, newOrder) {
     var self = this;
     self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
     .then(function(payload){
+    	
         self.questions = payload;
     }, function(err){
         self.error = "ERROR getting questions";
@@ -102,9 +98,14 @@ Controller.prototype.editQuestion = function(questionData){
     self._$state.go('app.course.assignments_add_edit_question', params, {reload : true});
 };
 
-<<<<<<< HEAD
+Controller.prototype.dropped = function(event, index, item) {
+    // Return false here to cancel drop. Return true if you insert the item yourself.
+    //this.callTest();
+    //console.log("works");
+	var self = this;
+	self.reorderQuestion(item.id, index + 1);
+    return item;
+};
 
-=======
->>>>>>> 7b76659a68f450c50467dad0c5c1c8645164750c
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);

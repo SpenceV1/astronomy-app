@@ -40,41 +40,37 @@
                 <th>Action</th>
             </tr>
         </thead>
-<<<<<<< HEAD
-        <tbody id="qtable" data-as-sortable="questionsEditCtrl.dragControlListeners" ng-model="questionsEditCtrl.questions"
-         ng-if="questionsEditCtrl.dragControlListeners.orderChanged" ng-init="questionsEditCtrl.getQuestions()">
-            <tr ng-repeat="question in questionsEditCtrl.questions" as-sortable-item>
-                <td><span as-sortable-item-handle class="glyphicon glyphicon-menu-hamburger"></span></td>
-=======
-        <tbody ng-model="questionsEditCtrl.questions">
-            <tr ng-repeat="question in questionsEditCtrl.questions | orderBy:'order'">
-                <td><a href=""
-                		ng-click="questionsEditCtrl.reorderQuestion(question.id, question.order - 1)">
-                		<span class="glyphicon glyphicon-circle-arrow-up"></span>
-                	</a></td>
-                <td><a href=""
-                		ng-click="questionsEditCtrl.reorderQuestion(question.id, question.order + 2)">
-                		<span class="glyphicon glyphicon-circle-arrow-down"></span>
-                	</a></td>
->>>>>>> 7b76659a68f450c50467dad0c5c1c8645164750c
+        <tbody dnd-list="questionsEditCtrl.questions" dnd-inserted="questionsEditCtrl.reorderQuestion(item.id, index + 1)">
+            <tr ng-repeat="question in questionsEditCtrl.questions | orderBy:'order'" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
+                <td> <a class="pointer-cursor"><span class="glyphicon glyphicon-search"></span></a></td>
+                <td> {{ question.order }}</td>
+                <td> {{ question.id }}</td>
                 <td> {{ question.humanReadableText | limitTo:10 }}</td>
                 <td> {{ question.pageItemType }}</td>
                 <td> {{ question.questionType }}</td>
                 <td> {{ question.points }}</td>
                 <td> {{ question.isGatekeeper ? 'Yes' : 'No' }}</td>
                 <td> {{ question.machineGradeable ? 'Yes' : 'No' }}</td>
-                <td>
-                	<a href=""
+                <td> <a href=""
                 		ng-click="questionsEditCtrl.editQuestion(question)">
                 			<span class="glyphicon glyphicon-pencil"></span>
-                		</a>
-                		 |
-                	<a href=""
+                	 </a></td>
+                <td><a href=""
                         ng-click="questionsEditCtrl.dropQuestion(question.id)" >Delete</a> </td>
             </tr>
+            <tr class="dndPlaceholder"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         </tbody>
         </table>
 
     </div>
 </div>
+<style>
 
+	.dndPlaceholder{
+		height: 4em;
+	}
+	
+	.dndDraggingSource{
+		display: none;
+    }
+</style>
