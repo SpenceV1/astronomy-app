@@ -224,6 +224,24 @@ Service.prototype.getUrl = function(url){
     }
 };
 
+//Update order of questions in assignment
+Service.prototype.reorderQuestion = function(courseId, moduleId, itemId, newOrder){
+    var self = this;
+    var config = self.getConfig();
+
+    var url = self._appSettings.API.basePath
+    + '/rest/instructor/course/'+ courseId +'/module/' + moduleId
+    + '/item/' + itemId + '/reorder';
+    
+    config.params.newOrder = newOrder;
+    
+    return this._$http
+          .post(url, null, config)
+          .then(function (res) {
+            return res.data;
+          });
+};
+
 module.exports = angular.module('app.models.question', [
     'app.settings'
 ]).service('QuestionService', Service);
