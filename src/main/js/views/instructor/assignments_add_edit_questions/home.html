@@ -39,7 +39,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody dnd-list="questionsEditCtrl.questions">
+        <tbody dnd-list="questionsEditCtrl.questions" dnd-inserted="questionsEditCtrl.reorderQuestion(item.id, index + 1)">
             <tr ng-repeat="question in questionsEditCtrl.questions" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
                 <td> <span class="drag-handle">:::</span></td>
                 <td title="{{question.humanReadableText}}"> {{ question.humanReadableText | limitTo:10 }}</td>
