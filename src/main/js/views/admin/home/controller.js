@@ -1,3 +1,4 @@
+//controller
 function Controller($state, $stateParams, AdminService) {
     "ngInject";
     this._$state = $state;
