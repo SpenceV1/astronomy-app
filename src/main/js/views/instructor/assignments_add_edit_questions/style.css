@@ -1,3 +1,9 @@
-
+.dndPlaceholder{
+	height: 4em;
+}
+	
+.dndDraggingSource{
+	display: none;
+}
 
 

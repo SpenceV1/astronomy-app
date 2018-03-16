@@ -29,8 +29,7 @@
         <table class="table table-hover">
         <thead>
             <tr>
-                <th width="5px"></th>
-                <th width="5px"></th>
+                <th width="2em"></th>
                 <th>Text</th>
                 <th>Type</th>
                 <th>Q Type</th>
@@ -42,9 +41,7 @@
         </thead>
         <tbody dnd-list="questionsEditCtrl.questions" dnd-inserted="questionsEditCtrl.reorderQuestion(item.id, index + 1)">
             <tr ng-repeat="question in questionsEditCtrl.questions | orderBy:'order'" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
-                <td> <a class="pointer-cursor"><span class="glyphicon glyphicon-search"></span></a></td>
-                <td> {{ question.order }}</td>
-                <td> {{ question.id }}</td>
+                <td> <a class="pointer-cursor"><span class="glyphicon glyphicon-star"></span></a></td>
                 <td> {{ question.humanReadableText | limitTo:10 }}</td>
                 <td> {{ question.pageItemType }}</td>
                 <td> {{ question.questionType }}</td>
@@ -64,13 +61,3 @@
 
     </div>
 </div>
-<style>
-
-	.dndPlaceholder{
-		height: 4em;
-	}
-	
-	.dndDraggingSource{
-		display: none;
-    }
-</style>
