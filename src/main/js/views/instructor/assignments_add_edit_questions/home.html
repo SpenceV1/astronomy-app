@@ -30,6 +30,7 @@
         <thead>
             <tr>
                 <th width="2em"></th>
+                <th>&nbsp;</th>
                 <th>Text</th>
                 <th>Type</th>
                 <th>Q Type</th>
@@ -43,6 +44,9 @@
             <tr ng-repeat="question in questionsEditCtrl.questions | orderBy:'order'" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
                 <td> <a class="pointer-cursor"><span class="glyphicon glyphicon-star"></span></a></td>
                 <td> {{ question.humanReadableText | limitTo:10 }}</td>
+            <tr ng-repeat="question in questionsEditCtrl.questions" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
+                <td> <span class="drag-handle">:::</span></td>
+                <td title="{{question.humanReadableText}}"> {{ question.humanReadableText | limitTo:10 }}</td>
                 <td> {{ question.pageItemType }}</td>
                 <td> {{ question.questionType }}</td>
                 <td> {{ question.points }}</td>
@@ -51,13 +55,12 @@
                 <td> <a href=""
                 		ng-click="questionsEditCtrl.editQuestion(question)">
                 			<span class="glyphicon glyphicon-pencil"></span>
-                	 </a></td>
-                <td><a href=""
+                	 </a> 
+                	 <a href=""
                         ng-click="questionsEditCtrl.dropQuestion(question.id)" >Delete</a> </td>
             </tr>
-            <tr class="dndPlaceholder"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+            <tr class="dndPlaceholder"><td></td><td>Drop Here</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         </tbody>
         </table>
-
     </div>
 </div>

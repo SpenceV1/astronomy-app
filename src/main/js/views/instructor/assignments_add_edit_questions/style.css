@@ -1,3 +1,4 @@
+
 .dndPlaceholder{
 	height: 4em;
 }
@@ -5,5 +6,18 @@
 .dndDraggingSource{
 	display: none;
 }
+.drag-handle {
+    font-weight: bold;
+    color: #ddd;
+    cursor: move;
+}
 
+.dndPlaceholder{
+	height: 3em;
+    background-color: #ddd;
+    font-weight: bold;
+}
 
+.dndDraggingSource{
+	display: none;
+}

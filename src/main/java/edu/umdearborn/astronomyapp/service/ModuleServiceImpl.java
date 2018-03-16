@@ -255,6 +255,10 @@ public class ModuleServiceImpl implements ModuleService {
       result.addAll(numericResult);
     }
 
+    result = result.stream()
+		.sorted(Comparator.comparing(PageItem::getOrder))
+		.collect(Collectors.toList());
+    
     return result;
   }
 
