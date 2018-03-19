@@ -1,3 +1,11 @@
+
+.dndPlaceholder{
+	height: 4em;
+}
+	
+.dndDraggingSource{
+	display: none;
+}
 .drag-handle {
     font-weight: bold;
     color: #ddd;
