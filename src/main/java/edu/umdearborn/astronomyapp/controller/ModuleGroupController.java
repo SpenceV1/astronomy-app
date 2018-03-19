@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import edu.umdearborn.astronomyapp.entity.Answer;
 import edu.umdearborn.astronomyapp.entity.CourseUser;
 import edu.umdearborn.astronomyapp.entity.ModuleGroup;
+import edu.umdearborn.astronomyapp.entity.NumericQuestion;
+import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
 import edu.umdearborn.astronomyapp.service.AclService;
 import edu.umdearborn.astronomyapp.service.AutoGradeService;
 import edu.umdearborn.astronomyapp.service.GradeService;
@@ -456,8 +458,16 @@ public class ModuleGroupController {
                 a.getValue(), a.getQuestion().getId());
             points = BigDecimal.ZERO;
           }
-
+          
+          if (QuestionType.NUMERIC.equals(a.getQuestion().getQuestionType())) {
+        	  if(autoGradeService.checkUnitAnswer(a.getId())) {
+        		  BigDecimal unitPoints = autoGradeService.getNumericUnitPoints(a.getQuestion().getId());
+        		  points = points.add(unitPoints);
+        	  }
+          }
+          
           autoGradeService.setPointsEarned(a.getId(), points);
+          
         });
 
     return Optional.ofNullable(groupService.getAnswers(groupId, false))

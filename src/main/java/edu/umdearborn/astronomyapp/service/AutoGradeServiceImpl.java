@@ -19,6 +19,7 @@ import edu.umdearborn.astronomyapp.entity.MultipleChoiceQuestion;
 import edu.umdearborn.astronomyapp.entity.NumericQuestion;
 import edu.umdearborn.astronomyapp.entity.Question;
 import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
+import edu.umdearborn.astronomyapp.entity.UnitOption;
 
 @Service
 @Transactional
@@ -61,6 +62,28 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     }
     return false;
   }
+  
+  public boolean checkUnitAnswer(String answerId) {
+	  Answer answer = entityManager.find(Answer.class, answerId);
+	  if (QuestionType.NUMERIC.equals(answer.getQuestion().getQuestionType())) {
+        return checkUnit(answer,
+          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()));
+      } else {
+    	  return false;
+      }
+  }
+  
+  protected boolean checkUnit(Answer answer, NumericQuestion question) {
+    Optional<UnitOption> unit = question.getOptions().stream().filter(e -> e.isCorrectOption()).findFirst();
+    if(unit.isPresent()) {
+    	UnitOption correctUnit = unit.get();
+    	if(correctUnit.getId().equals(answer.getValue().split("&")[1])) {
+    		return true;
+    	}
+    }
+
+    return false;
+  }
 
   protected boolean checkNumeric(Answer answer, NumericQuestion question) {
     String[] parts = Optional.ofNullable(answer.getValue()).orElse("").split("&");
@@ -75,10 +98,7 @@ public class AutoGradeServiceImpl implements AutoGradeService {
         question.getCorrectCoefficient().subtract(question.getAllowedCoefficientSpread())
             .movePointRight(question.getCorrectExponenet());
     if (isWinthin(numberAnswer, upperLimit, lowerLimit)) {
-      String correctUnit = question.getOptions().parallelStream().filter(e -> e.isCorrectOption())
-          .map(e -> e.getId()).findAny().orElse("!" + parts[1]);
-
-      return parts[1].equals(correctUnit);
+    	return true;
     }
 
     logger.debug("Number value: {} incorrect", numberAnswer);
@@ -125,7 +145,13 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     entityManager.merge(answer);
 
     return answer;
-
+  }
+  
+  @Override
+  public BigDecimal getNumericUnitPoints(String questionId) {
+	  NumericQuestion question = entityManager.find(NumericQuestion.class, questionId);
+	  BigDecimal unitPoints = question.getUnitPoints();
+	  return unitPoints;
   }
 
 }

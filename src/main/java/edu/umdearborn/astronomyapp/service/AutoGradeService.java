@@ -15,4 +15,9 @@ public interface AutoGradeService {
   public boolean answeredGatekeepers(String moduleId, int pageNum, String groupId);
 
   public Answer setPointsEarned(String answerId, BigDecimal points);
+  
+  public boolean checkUnitAnswer(String id);
+
+  BigDecimal getNumericUnitPoints(String questionId);
+  
 }
