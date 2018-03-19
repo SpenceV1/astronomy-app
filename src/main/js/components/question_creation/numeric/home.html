@@ -26,9 +26,18 @@
         <span class="help-block">The +- spread for the answer</span>
     </div>
 </div>
+<div class="checkbox-inline unitcheckbox">
+	<label>
+		<h3>
+			<input type="checkbox" ng-model="model.isUnits" ng-change="removeOptions(); model.unitPoints = '' ">
+			Units
+		</h3>
+	</label>
+</div>	
+<div ng-show="model.isUnits">
 <div class="form-group row">
     <div class="col-sm-6">
-        <legend>Units</legend>
+    	<legend></legend>
         <ul class="list-group">
             <li class="list-group-item" ng-repeat="option in model.options track by $index" >
                 {{ option.humanReadableText }}
@@ -54,9 +63,17 @@
             ng-disabled="!newOption">Add Unit</button>
 </div>
 <div class="form-group">
-    <legend>Points</legend>
+    <label>Unit Points</label>
+    <input class="form-control" type="number" ng-model="model.unitPoints" ng-disabled="!model.isUnits" ng-init="0" class="form-control">
+</div>
+<legend></legend>
+</div>
+
+<div class="form-group">
+    <label>Question Points</label>
     <input class="form-control" type="number" ng-model="model.points">
 </div>
+<legend>Total Point Value: {{model.points + model.unitPoints}}</legend>
 <div class="form-group">
     <legend>Gatekeeper</legend>
     <label class="checkbox-inline">

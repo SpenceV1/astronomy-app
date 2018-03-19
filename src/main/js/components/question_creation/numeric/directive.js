@@ -8,7 +8,7 @@ function Directive($state){
         }
 
         if(!("options" in scope.model)){
-            scope.model.options = []
+            scope.model.options = [];
         }
 
         scope.addNewOption = function(option){
@@ -18,7 +18,10 @@ function Directive($state){
         scope.removeOption = function(index){
             scope.model.options.splice(index,1);
         }
-
+        
+        scope.removeOptions = function(){
+            scope.model.options.length = 0;
+        }
     }
 
     function addOption(scope, option){
