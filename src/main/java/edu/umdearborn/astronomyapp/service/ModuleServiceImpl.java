@@ -402,31 +402,36 @@ public class ModuleServiceImpl implements ModuleService {
     entityManager
         .createNativeQuery(
             "insert into numeric_question(numeric_question_id, allowed_coefficient_spread, "
-                + "allowed_exponenet_spread, correct_coefficient, correct_exponenet, requires_scale) "
-                + "values (?, ?, ?, ?, ?, ?)")
+                + "allowed_exponenet_spread, correct_coefficient, correct_exponenet, requires_scale, unit_points) "
+                + "values (?, ?, ?, ?, ?, ?, ?)")
         .setParameter(1, question.getId()).setParameter(2, question.getAllowedCoefficientSpread())
         .setParameter(3, question.getAllowedExponenetSpread())
         .setParameter(4, question.getCorrectCoefficient())
         .setParameter(5, question.getCorrectExponenet()).setParameter(6, question.getRequiresScale())
+        .setParameter(7, question.getUnitPoints())
         .executeUpdate();
 
     logger.debug("Inserting into numeric_question options");
-    StringBuilder builder = new StringBuilder(
-        "insert into unit_option(unit_option_id, is_correct_option, option_question_id, "
-            + "help_text, human_readable_text) values");
-    List<Object> params = question.getOptions().stream().flatMap(o -> {
-      builder.append("(?, ?, ?, ?, ?),");
-      o.prePersist();
-      return Arrays.asList(o.getId(), o.isCorrectOption(), question.getId(), o.getHelpText(),
-          o.getHumanReadableText()).stream();
-    }).collect(Collectors.toList());
-
-    Query query =
-        entityManager.createNativeQuery(builder.deleteCharAt(builder.length() - 1).toString());
-
-    IntStream.rangeClosed(1, params.size()).forEach(i -> query.setParameter(i, params.get(--i)));
-
-    query.executeUpdate();
+    
+    if(question.getOptions().size() > 0) {
+	    StringBuilder builder = new StringBuilder(
+	        "insert into unit_option(unit_option_id, is_correct_option, option_question_id, "
+	            + "help_text, human_readable_text) values");
+	    List<Object> params = question.getOptions().stream().flatMap(o -> {
+	      builder.append("(?, ?, ?, ?, ?),");
+	      o.prePersist();
+	      return Arrays.asList(o.getId(), o.isCorrectOption(), question.getId(), o.getHelpText(),
+	          o.getHumanReadableText()).stream();
+	    }).collect(Collectors.toList());
+	
+	    Query query =
+	        entityManager.createNativeQuery(builder.deleteCharAt(builder.length() - 1).toString());
+	
+	    IntStream.rangeClosed(1, params.size()).forEach(i -> query.setParameter(i, params.get(--i)));
+	
+	    query.executeUpdate();
+    }
+    
   }
 
   @Override

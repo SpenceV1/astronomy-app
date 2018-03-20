@@ -10,6 +10,14 @@ function Directive($state){
         if(!("options" in scope.model)){
             scope.model.options = [];
         }
+        
+        if(!("unitPoints" in scope.model)){
+            scope.model.unitPoints = 0;
+        }
+        
+        if(!("points") in scope.model)){
+        	scope.model.points = 0;
+        }
 
         scope.addNewOption = function(option){
             addOption(scope, option);
@@ -21,6 +29,12 @@ function Directive($state){
         
         scope.removeOptions = function(){
             scope.model.options.length = 0;
+        }
+        
+        scope.showUnit = function(){
+        	//if existing question and contains units
+        	//or if new question and isUnits is checked.
+        	return (scope.model.id != null && scope.model.options.length > 0) || (scope.model.id == null && scope.model.isUnits);
         }
     }
 

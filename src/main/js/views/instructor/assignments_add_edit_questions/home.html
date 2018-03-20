@@ -41,9 +41,6 @@
             </tr>
         </thead>
         <tbody dnd-list="questionsEditCtrl.questions" dnd-inserted="questionsEditCtrl.reorderQuestion(item.id, index + 1)">
-            <tr ng-repeat="question in questionsEditCtrl.questions | orderBy:'order'" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
-                <td> <a class="pointer-cursor"><span class="glyphicon glyphicon-star"></span></a></td>
-                <td> {{ question.humanReadableText | limitTo:10 }}</td>
             <tr ng-repeat="question in questionsEditCtrl.questions" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
                 <td> <span class="drag-handle">:::</span></td>
                 <td title="{{question.humanReadableText}}"> {{ question.humanReadableText | limitTo:10 }}</td>
@@ -54,8 +51,10 @@
                 <td> {{ question.machineGradeable ? 'Yes' : 'No' }}</td>
                 <td> <a href=""
                 		ng-click="questionsEditCtrl.editQuestion(question)">
-                			<span class="glyphicon glyphicon-pencil"></span>
-                	 </a> 
+                			<button type="button" class="btn btn-xs btn-default">
+                            	<span class="glyphicon glyphicon-pencil"></span>
+                        	</button>
+                	 </a> | 
                 	 <a href=""
                         ng-click="questionsEditCtrl.dropQuestion(question.id)" >Delete</a> </td>
             </tr>

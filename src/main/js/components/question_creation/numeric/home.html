@@ -29,12 +29,12 @@
 <div class="checkbox-inline unitcheckbox">
 	<label>
 		<h3>
-			<input type="checkbox" ng-model="model.isUnits" ng-change="removeOptions(); model.unitPoints = '' ">
+			<input type="checkbox" ng-model="model.isUnits" ng-if="model.id == null">
 			Units
 		</h3>
 	</label>
 </div>	
-<div ng-show="model.isUnits">
+<div ng-show="showUnit();">
 <div class="form-group row">
     <div class="col-sm-6">
     	<legend></legend>
@@ -63,8 +63,9 @@
             ng-disabled="!newOption">Add Unit</button>
 </div>
 <div class="form-group">
-    <label>Unit Points</label>
-    <input class="form-control" type="number" ng-model="model.unitPoints" ng-disabled="!model.isUnits" ng-init="0" class="form-control">
+    <label>Unit Points
+    	<input class="form-control" type="number" ng-model="model.unitPoints" class="form-control">
+    </label>
 </div>
 <legend></legend>
 </div>
