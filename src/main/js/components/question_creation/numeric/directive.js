@@ -15,7 +15,7 @@ function Directive($state){
             scope.model.unitPoints = 0;
         }
         
-        if(!("points") in scope.model)){
+        if(!("points" in scope.model)){
         	scope.model.points = 0;
         }
 

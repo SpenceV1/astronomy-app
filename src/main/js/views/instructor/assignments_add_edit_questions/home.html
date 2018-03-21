@@ -30,7 +30,6 @@
         <thead>
             <tr>
                 <th width="2em"></th>
-                <th>&nbsp;</th>
                 <th>Text</th>
                 <th>Type</th>
                 <th>Q Type</th>
@@ -46,7 +45,7 @@
                 <td title="{{question.humanReadableText}}"> {{ question.humanReadableText | limitTo:10 }}</td>
                 <td> {{ question.pageItemType }}</td>
                 <td> {{ question.questionType }}</td>
-                <td> {{ question.points }}</td>
+                <td> {{ question.points + question.unitPoints }}</td>
                 <td> {{ question.isGatekeeper ? 'Yes' : 'No' }}</td>
                 <td> {{ question.machineGradeable ? 'Yes' : 'No' }}</td>
                 <td> <a href=""
