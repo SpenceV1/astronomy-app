@@ -24,6 +24,7 @@
         <label>Coefficient Spread:</label>
         <input type="number" class="form-control" ng-model="model.allowedCoefficientSpread">
         <span class="help-block">The +- spread for the answer</span>
+        <span class="help-block">Answer must be between {{ getAnswerBounds().lower }} and {{ getAnswerBounds().upper }}</span>
     </div>
 </div>
 <div class="checkbox-inline unitcheckbox">
