@@ -1,7 +1,8 @@
 
-function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService){
+function Controller($scope, $timeout, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService){
     "ngInject";
     this._$state = $state;
+    this.timeout = $timeout;
     this.pageName = "Add/Edit Assignment Questions";
     this.courseId = $stateParams.courseId;
     this.moduleId = $stateParams.moduleId;
@@ -63,9 +64,10 @@ Controller.prototype.reorderQuestion = function(itemId, newOrder) {
     var self = this;
     self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
     .then(function(payload){
-        self.questions = payload;
+    	
     }, function(err){
-        self.error = "ERROR getting questions";
+    	self.showError("ERROR reordering question!", 5000);
+        self.getQuestions();
     });
 };
 
@@ -104,6 +106,12 @@ Controller.prototype.dropped = function(event, index, item) {
 	var self = this;
 	self.reorderQuestion(item.id, index + 1);
     return item;
+};
+
+Controller.prototype.showError = function(err, time) {
+	var self = this;
+	self.error = err;
+    self.timeout(function() { self.error = ""; }, time);
 };
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])

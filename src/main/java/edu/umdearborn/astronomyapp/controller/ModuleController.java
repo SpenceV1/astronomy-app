@@ -187,7 +187,7 @@ public class ModuleController {
   
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/item/{itemId}/reorder", params = "newOrder",
 	      method = POST)
-	  public List<PageItem> getModulePageQuestions(@PathVariable("courseId") String courseId,
+	  public void getModulePageQuestions(@PathVariable("courseId") String courseId,
 	      @PathVariable("moduleId") String moduleId, @PathVariable("itemId") String itemId,
 	      @RequestParam(name = "newOrder") int newOrder, HttpSession session,
 	      Principal principal) {
@@ -195,7 +195,7 @@ public class ModuleController {
 	    acl.enforceInCourse(principal.getName(), courseId);
 	    acl.enforeceModuleInCourse(courseId, moduleId);
 
-	    return moduleService.reorderPageItem(itemId, newOrder);
+	    moduleService.reorderPageItem(itemId, newOrder);
   }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}", params = "page",

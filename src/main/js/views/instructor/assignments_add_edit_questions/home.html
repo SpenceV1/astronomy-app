@@ -9,6 +9,9 @@
         <div class="alert alert-success" ng-if="questionsEditCtrl.created_updated">
             Question was successfully updated/created
         </div>
+        <div class="alert alert-danger" ng-if="questionsEditCtrl.error">
+            {{ questionsEditCtrl.error }}
+        </div>
         <form name="addQuestionForm" novalidate class="form-inline">
             <div class="form-group">
                 <select class="form-control"

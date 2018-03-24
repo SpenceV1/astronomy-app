@@ -121,7 +121,7 @@ public class ModuleServiceImpl implements ModuleService {
   }
 
   @Override
-  public List<PageItem> reorderPageItem(String itemId, int newOrder) {
+  public void reorderPageItem(String itemId, int newOrder) {
 	  PageItem pageItem = entityManager.find(PageItem.class, itemId);
 	
 		//valid page, valid new position for page
@@ -191,10 +191,8 @@ public class ModuleServiceImpl implements ModuleService {
 		  } else {
 			  //nothing to reorder, must be the case order==newOrder or order is last item and trying to move down
 			  System.out.println("Nothing to do");
+			  throw new UpdateException("Nothing to reorder");
 		  }
-		  
-		  pageItems.sort(Comparator.comparing(PageItem::getOrder));
-		  return pageItems;
 		  
 	  } else {
 		  if(pageItem == null) {
