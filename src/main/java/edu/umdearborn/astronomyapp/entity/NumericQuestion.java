@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.PrimaryKeyJoinColumn;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -33,7 +34,6 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
   @JsonView(View.Student.class)
   @NotNull
   @Min(0)
-  @Max(10)
   private int allowedExponenetSpread = 0;
 
   @NotNull
@@ -41,8 +41,6 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
   private BigDecimal correctCoefficient = new BigDecimal(0);
 
   @NotNull
-  @Min(0)
-  @Max(10)
   private int correctExponenet = 0;
 
   @JsonView(View.Student.class)
@@ -50,6 +48,12 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
   @Max(10)
   @NotNull
   private int requiresScale = 0;
+  
+  @JsonView(View.Student.class)
+  @NotNull
+  @DecimalMin("0")
+  @Column(precision = 8, scale = 4)
+  private BigDecimal unitPoints = new BigDecimal(0);
 
   @Override
   public boolean equals(Object obj) {
@@ -75,6 +79,10 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
   public int getRequiresScale() {
     return requiresScale;
   }
+  
+  public BigDecimal getUnitPoints() {
+    return unitPoints;
+  }
 
   @Override
   public int hashCode() {
@@ -99,6 +107,10 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
 
   public void setRequiresScale(int requiresScale) {
     this.requiresScale = requiresScale;
+  }
+  
+  public void setUnitPoints(BigDecimal unitPoints) {
+    this.unitPoints = unitPoints;
   }
 
   @Override

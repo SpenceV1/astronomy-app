@@ -99,11 +99,13 @@ public class CourseController {
 
 		course = courseService.clone(course, cloneFromId, principal.getName());
 
-		course = courseService.createCourse(course, principal.getName());
-		CourseUser courseUser = courseService.getCourseUser(principal.getName(), course.getId());
-		Map<String, String> map = HttpSessionUtil.getCourseUsers(session);
-		map.put(course.getId(), courseUser.getId());
-		HttpSessionUtil.putCourseUsers(session, map);
+		/*
+			course = courseService.createCourse(course, principal.getName());
+			CourseUser courseUser = courseService.getCourseUser(principal.getName(), course.getId());
+			Map<String, String> map = HttpSessionUtil.getCourseUsers(session);
+			map.put(course.getId(), courseUser.getId());
+			HttpSessionUtil.putCourseUsers(session, map);
+		*/
 
 		return course;
 	}

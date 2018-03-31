@@ -8,7 +8,15 @@ function Directive($state){
         }
 
         if(!("options" in scope.model)){
-            scope.model.options = []
+            scope.model.options = [];
+        }
+        
+        if(!("unitPoints" in scope.model)){
+            scope.model.unitPoints = 0;
+        }
+        
+        if(!("points" in scope.model)){
+        	scope.model.points = 0;
         }
 
         scope.addNewOption = function(option){
@@ -18,7 +26,26 @@ function Directive($state){
         scope.removeOption = function(index){
             scope.model.options.splice(index,1);
         }
-
+        
+        scope.removeOptions = function(){
+            scope.model.options.length = 0;
+        }
+        
+        scope.showUnit = function(){
+        	//if existing question and contains units
+        	//or if new question and isUnits is checked.
+        	return (scope.model.id != null && scope.model.options.length > 0) || (scope.model.id == null && scope.model.isUnits);
+        }
+        
+        scope.getAnswerBounds = function(){
+        	var answerBounds = {};
+        	var coefficient = new BigNumber(scope.model.correctCoefficient);
+        	var exponent = scope.model.correctExponenet;
+        	var spread = new BigNumber(scope.model.allowedCoefficientSpread);
+        	answerBounds.lower = coefficient.minus(spread).shiftedBy(exponent).toExponential();
+        	answerBounds.upper = coefficient.plus(spread).shiftedBy(exponent).toExponential();
+            return answerBounds;
+        }
     }
 
     function addOption(scope, option){

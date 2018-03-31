@@ -24,11 +24,21 @@
         <label>Coefficient Spread:</label>
         <input type="number" class="form-control" ng-model="model.allowedCoefficientSpread">
         <span class="help-block">The +- spread for the answer</span>
+        <span class="help-block">Answer must be between {{ getAnswerBounds().lower }} and {{ getAnswerBounds().upper }}</span>
     </div>
 </div>
+<div class="checkbox-inline unitcheckbox">
+	<label>
+		<h3>
+			<input type="checkbox" ng-model="model.isUnits" ng-if="model.id == null">
+			Units
+		</h3>
+	</label>
+</div>	
+<div ng-show="showUnit();">
 <div class="form-group row">
     <div class="col-sm-6">
-        <legend>Units</legend>
+    	<legend></legend>
         <ul class="list-group">
             <li class="list-group-item" ng-repeat="option in model.options track by $index" >
                 {{ option.humanReadableText }}
@@ -54,9 +64,17 @@
             ng-disabled="!newOption">Add Unit</button>
 </div>
 <div class="form-group">
-    <legend>Points</legend>
+    <label>Unit Points</label>
+    	<input class="form-control" type="number" ng-model="model.unitPoints" class="form-control">
+</div>
+<legend></legend>
+</div>
+
+<div class="form-group">
+    <label>Question Points</label>
     <input class="form-control" type="number" ng-model="model.points">
 </div>
+<legend>Total Point Value: {{model.points + model.unitPoints}}</legend>
 <div class="form-group">
     <legend>Gatekeeper</legend>
     <label class="checkbox-inline">

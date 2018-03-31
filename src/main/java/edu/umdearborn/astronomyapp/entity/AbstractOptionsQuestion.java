@@ -28,7 +28,6 @@ public abstract class AbstractOptionsQuestion<T extends AbstractOption> extends 
   @JsonView(View.Student.class)
   @JsonDeserialize(as = HashSet.class)
   @Valid
-  @Size(min = 1)
   @OneToMany(cascade = CascadeType.ALL)
   @JoinColumn(name = "optionQuestionId")
   private Set<T> options = new HashSet<>();
