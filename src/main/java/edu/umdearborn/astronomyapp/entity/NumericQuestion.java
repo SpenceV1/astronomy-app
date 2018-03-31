@@ -34,7 +34,6 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
   @JsonView(View.Student.class)
   @NotNull
   @Min(0)
-  @Max(10)
   private int allowedExponenetSpread = 0;
 
   @NotNull
@@ -42,8 +41,6 @@ public class NumericQuestion extends AbstractOptionsQuestion<UnitOption> {
   private BigDecimal correctCoefficient = new BigDecimal(0);
 
   @NotNull
-  @Min(0)
-  @Max(10)
   private int correctExponenet = 0;
 
   @JsonView(View.Student.class)
