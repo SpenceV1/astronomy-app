@@ -133,6 +133,7 @@ public class CourseServiceImpl implements CourseService {
   @Override
   public Course clone(Course course, String cloneFromId, String email) {
     course = createCourse(course, email);
+    logger.info("Creating new course: '{}'", course.getId());
 
     List<Module> modules = new ArrayList<>();
     List<Page> pages = new ArrayList<>();
@@ -282,12 +283,13 @@ public class CourseServiceImpl implements CourseService {
             entityManager
                 .createNativeQuery("INSERT INTO numeric_question(allowed_coefficient_spread, "
                     + "allowed_exponenet_spread, correct_coefficient, correct_exponenet, "
-                    + "requires_scale, numeric_question_id) VALUES (?, ?, ?, ?, ?, ?)")
+                    + "requires_scale, numeric_question_id, unit_points) VALUES (?, ?, ?, ?, ?, ?, ?)")
                 .setParameter(1, nq.getAllowedCoefficientSpread())
                 .setParameter(2, nq.getAllowedCoefficientSpread())
                 .setParameter(3, nq.getCorrectCoefficient())
                 .setParameter(4, nq.getCorrectExponenet()).setParameter(5, nq.getRequiresScale())
-                .setParameter(6, e.getId()).executeUpdate();
+                .setParameter(6, e.getId())
+                .setParameter(7, nq.getUnitPoints()).executeUpdate();
 
             logger.debug("Inserting numeric unit options");
             nq.getOptions().stream().forEach(f -> {
