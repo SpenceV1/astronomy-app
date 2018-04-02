@@ -22,7 +22,7 @@
             </div>
             <div class="form-group" ng-class="{ 'has-error' : assignmentForm.openDate.$invalid && !assignmentForm.openDate.$pristine }">
                 <label>Open Date</label>
-                <input type="date" class="form-control" format-date
+                <input type="datetime-local" class="form-control" format-date
                        name="openDate"
                        ng-model="assignmentsEditCtrl.assignment.openTimestamp"
                        required>
@@ -30,7 +30,7 @@
             </div>
             <div class="form-group" ng-class="{ 'has-error' : assignmentForm.closeDate.$invalid && !assignmentForm.closeDate.$pristine }">
                 <label>Close Date</label>
-                <input type="date" class="form-control" format-date
+                <input type="datetime-local" class="form-control" format-date
                        name="closeDate"
                        ng-model="assignmentsEditCtrl.assignment.closeTimestamp"
                        required>
