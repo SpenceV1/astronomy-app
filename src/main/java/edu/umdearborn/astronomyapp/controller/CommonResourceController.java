@@ -85,6 +85,8 @@ public class CommonResourceController {
     return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
+  /*
+  //Depreciated in favor of random passwords only
   @RequestMapping(value = "/self/password/change", method = POST)
   public ResponseEntity<Void> changePassword(@RequestBody Map<String, String> payload,
       Principal principal) {
@@ -98,5 +100,6 @@ public class CommonResourceController {
       return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
   }
+  */
 
 }
