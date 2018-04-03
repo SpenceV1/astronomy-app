@@ -24,11 +24,8 @@ Controller.prototype.init = function(){
 Controller.prototype.addCourse= function(valid, course) {
     var self = this;
     if(valid){
-    	var payload = course;
-    	payload.closeTimestamp = new Date(payload.closeTimestamp.getTime() + (payload.closeTimestamp.getTimezoneOffset() * 60000));
-    	payload.openTimestamp = new Date(payload.openTimestamp.getTime() + (payload.openTimestamp.getTimezoneOffset() * 60000));
         self.error = null;
-        self._CourseService.addCourse(payload)
+        self._CourseService.addCourse(course)
             .then(function(payload){
                 self._$state.go('app.courses', { created_updated : true });
         }, function(err){
