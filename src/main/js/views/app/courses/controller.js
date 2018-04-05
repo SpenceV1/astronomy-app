@@ -6,6 +6,7 @@ function Controller($state, $stateParams, CourseService, ConfirmationService){
     this._CourseService = CourseService;
     this._ConfirmationService = ConfirmationService;
     this.created_updated = $stateParams.created_updated;
+    this.showAllCourses = false;
     this.init();
 };
 
@@ -28,6 +29,7 @@ Controller.prototype.getCourses = function(){
 //Purpose: Get all the courses including the ones that have already closed
 Controller.prototype.getAllCourses = function(){
     var self = this;
+    self.showAllCourses = true;
     self._CourseService.getAllCourses().then(
         function(payload){
         self.courses = payload;
@@ -42,7 +44,7 @@ Controller.prototype.dropCourse = function(course){
     var footNote = course.courseTitle + ", " + course.courseCode;
     var modalInstance = self._ConfirmationService.open("", confirmation, footNote);
     modalInstance.result.then(function(){
-        self._CourseService.dropCourse(course.id)
+    	self._CourseService.dropCourse(course.id, self.showAllCourses)
         .then(function(payload){
             self.courses = payload;
         }, function(err){

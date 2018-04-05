@@ -97,10 +97,8 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   public Course updateCourse(Course course) {
-    Course old = entityManager.find(Course.class, course.getId());
-    old = course;
-    entityManager.merge(old);
-    return old;
+    entityManager.merge(course);
+    return course;
   }
 
   @Override

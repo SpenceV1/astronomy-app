@@ -24,13 +24,23 @@ Controller.prototype.init = function(){
 Controller.prototype.addCourse= function(valid, course) {
     var self = this;
     if(valid){
-        self.error = null;
-        self._CourseService.addCourse(course)
-            .then(function(payload){
-                self._$state.go('app.courses', { created_updated : true });
-        }, function(err){
-           self.error = "ERROR creating/updating the course";
-        });
+    	if(!self.course.id){
+	        self.error = null;
+	        self._CourseService.addCourse(course)
+	            .then(function(payload){
+	                self._$state.go('app.courses', { created_updated : true });
+	        }, function(err){
+	           self.error = "ERROR creating/updating the course";
+	        });
+    	} else {
+	        self.error = null;
+	        self._CourseService.editCourse(course.id, course)
+	            .then(function(payload){
+	                self._$state.go('app.courses', { created_updated : true });
+	        }, function(err){
+	           self.error = "ERROR creating/updating the course";
+	        });
+    	}
     }
 };
 
