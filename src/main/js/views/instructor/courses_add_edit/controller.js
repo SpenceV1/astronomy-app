@@ -47,6 +47,10 @@ Controller.prototype.getAllPossibleToCloneCourses = function(){
     });
 }
 
+Controller.prototype.closeDatePicker = function() {
+	var self = this;
+    self.closeDatePickOpen = true;
+};
 
 module.exports = angular.module('app.views.instructor.courses.add_edit', [])
 .controller('Instructor.CoursesAddEdit', Controller);
