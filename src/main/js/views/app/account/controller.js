@@ -12,17 +12,12 @@ function Controller($scope, $state, UserService){
 
 Controller.prototype.init = function(){
     var self = this;
+    self.getAccount();
 }
 
-
-Controller.prototype.submit = function(){
+Controller.prototype.getAccount = function(){
     var self = this;
-    self._UserService.newPassword(self.newPassword)
-        .then(function(payload){
-        self.changeSuccess = true;
-    }, function(err){
-       self.error = "ERROR changing your password";
-    });
+    self.user = self._UserService.getAccount();
 };
 
 module.exports = angular.module('app.views.app.account.controller', [])
