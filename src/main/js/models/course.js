@@ -40,7 +40,7 @@ Service.prototype.getCourses = function(){
 
 //Get all the courses that the person is associated with
 Service.prototype.getAllCourses = function(){
-    var self =this;
+    var self = this;
     var config = self.getConfig();
     config.params = {};
     config.params.hideOpenSoon = false;
@@ -122,10 +122,28 @@ Service.prototype.addCourse = function(payload){
     });
 };
 
-//Purpose: delete a course
-Service.prototype.dropCourse = function(courseId){
+Service.prototype.editCourse = function(courseId, payload){
     var self = this;
     var config = self.getConfig();
+
+    var url = self._appSettings.API.basePath + '/rest/instructor/course/'+courseId;
+    return self._$http
+        .put(url, payload, config)
+        .then(function(res){
+            return res.data;
+    });
+};
+
+//Purpose: delete a course
+Service.prototype.dropCourse = function(courseId, showAll){
+    var self = this;
+    var config = self.getConfig();
+    config.params = {};
+    config.params.hideOpenSoon = false;
+    if(showAll) {
+        config.params.hideClosed = false;
+    }
+    
     var url = self._appSettings.API.basePath
     + '/rest/instructor/course/'
     + courseId;
