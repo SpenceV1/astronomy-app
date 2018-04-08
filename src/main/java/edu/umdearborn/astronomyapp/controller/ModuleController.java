@@ -235,7 +235,7 @@ public class ModuleController {
 
     acl.enforceInCourse(principal.getName(), courseId);
     acl.enforeceModuleInCourse(courseId, moduleId);
-    acl.enforceModuleNotOpen(moduleId);
+    //acl.enforceModuleNotOpen(moduleId);
 
     /*
     Errors errors;
