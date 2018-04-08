@@ -18,34 +18,34 @@
                 	<span class="input-group-btn">
                     	<button type="button" class="btn btn-warning"
                     		ng-click="removeOption($index)" 
-                    		ng-disabled="$parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp">
+                    		ng-disabled="pastOpenDate()">
                       		<span class="glyphicon glyphicon-trash"></span>
                     	</button>
                     </span>
 				</div>
                 <div class="checkbox margin-bottom-0">
                     <label>
-                        <input type="checkbox" ng-model="option.isCorrectOption" ng-disabled="$parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp"> Correct
+                        <input type="checkbox" ng-model="option.isCorrectOption" ng-disabled="pastOpenDate()"> Correct
                     </label>
                 </div>
             </li>
         </ul>
-        <input type="text" ng-model="newOption" class="form-control" placeholder="Answer Text" ng-disabled="$parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp">
+        <input type="text" ng-model="newOption" class="form-control" placeholder="Answer Text" ng-disabled="pastOpenDate()">
     </div>
 </div>
 <div class="form-group">
     <button type="button" class="btn btn-primary"
             ng-click="addNewOption(newOption)"
-            ng-disabled="!newOption && $parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp">Add Answer</button>
+            ng-disabled="!newOption && pastOpenDate()">Add Answer</button>
 </div>
 <div class="form-group">
     <legend>Points</legend>
-    <input class="form-control" type="number" ng-model="model.points" ng-disabled="$parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp">
+    <input class="form-control" type="number" ng-model="model.points" ng-disabled="pastOpenDate()">
 </div>
 <div class="form-group">
     <legend>Gatekeeper</legend>
     <label class="checkbox-inline">
-      <input type="checkbox" ng-model="model.isGatekeeper" ng-disabled="$parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp">
+      <input type="checkbox" ng-model="model.isGatekeeper" ng-disabled="pastOpenDate()">
        Gatekeeper
     </label>
 </div>
