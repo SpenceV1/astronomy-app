@@ -17,8 +17,15 @@
         </div>
     </div>
     <div class="row">
-           	<div>Name: {{ account.user.firstName }} {{ account.user.lastName }}</div>
-        	<div>Email: {{ account.user.email }}</div>
-        	<div>Role: {{ account.user.roles[0] }}</div>
+       	<div class="panel panel-default account-info">
+		    <div class="panel-heading">
+		      <h3 class="panel-title acc-label">Account information</h3>
+		    </div>
+		    <div class="panel-body">
+		        <div><span class="acc-label">Name: </span><span>{{ account.user.firstName }} {{ account.user.lastName }}</span></div>
+		        <div><span class="acc-label">Email: </span><span>{{ account.user.email }}</span></div>
+		        <div><span class="acc-label">Role: </span><span>{{ account.user.roles[0] }}</span></div>
+		    </div>
+		</div>
     </div>
 </div>

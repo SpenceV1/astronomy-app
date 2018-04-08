@@ -19,7 +19,7 @@ function Directive($state){
             scope.model.options.splice(index,1);
         }
         
-        scope.pastOpenDate() = function(){
+        scope.pastOpenDate = function(){
         	return $parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp;
         }
 

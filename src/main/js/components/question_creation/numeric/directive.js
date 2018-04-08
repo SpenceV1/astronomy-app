@@ -37,7 +37,7 @@ function Directive($state){
         	return (scope.model.id != null && scope.model.options.length > 0) || (scope.model.id == null && scope.model.isUnits);
         }
         
-        scope.pastOpenDate() = function(){
+        scope.pastOpenDate = function(){
         	return $parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp;
         }
         
