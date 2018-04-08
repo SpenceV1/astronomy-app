@@ -10,7 +10,6 @@ function Controller($scope, $state, course, CourseService, ErrorService){
     this._ErrorService = ErrorService;
     this.today = new Date();
     this.init();
-
 };
 
 Controller.prototype.init = function(){
