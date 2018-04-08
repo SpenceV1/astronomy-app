@@ -267,8 +267,13 @@ public class ModuleServiceImpl implements ModuleService {
         .createQuery("select coalesce(sum(q.points), 0) from Question q join q.page p join "
             + "p.module m where m.id = :moduleId", BigDecimal.class);
     query.setParameter("moduleId", moduleId);
+    
+    TypedQuery<BigDecimal> query2 = entityManager
+            .createQuery("select coalesce(sum(nq.unitPoints), 0) from NumericQuestion nq, Question q join q.page p join "
+                + "p.module m where m.id = :moduleId and q.id = nq.id", BigDecimal.class);
+        query2.setParameter("moduleId", moduleId);
 
-    return query.getSingleResult();
+    return query.getSingleResult().add(query2.getSingleResult());
   }
 
   @Override
