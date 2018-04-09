@@ -36,5 +36,15 @@ Controller.prototype.add_eidtAssignment = function(valid, assignment){
     }
 }
 
+Controller.prototype.closeDatePicker = function() {
+	var self = this;
+    self.closeDatePickOpen = true;
+};
+
+Controller.prototype.openDatePicker = function() {
+	var self = this;
+    self.openDatePickOpen = true;
+};
+
 module.exports = angular.module('app.views.instructor.assignments.add_edit', [])
 .controller('Instructor.AssignmentsAddEdit', Controller);

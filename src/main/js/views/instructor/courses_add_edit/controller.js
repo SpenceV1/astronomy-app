@@ -10,7 +10,6 @@ function Controller($scope, $state, course, CourseService, ErrorService){
     this._ErrorService = ErrorService;
     this.today = new Date();
     this.init();
-
 };
 
 Controller.prototype.init = function(){
@@ -56,6 +55,15 @@ Controller.prototype.getAllPossibleToCloneCourses = function(){
     });
 }
 
+Controller.prototype.closeDatePicker = function() {
+	var self = this;
+    self.closeDatePickOpen = true;
+};
+
+Controller.prototype.openDatePicker = function() {
+	var self = this;
+    self.openDatePickOpen = true;
+};
 
 module.exports = angular.module('app.views.instructor.courses.add_edit', [])
 .controller('Instructor.CoursesAddEdit', Controller);
