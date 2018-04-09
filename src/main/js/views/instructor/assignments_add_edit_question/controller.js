@@ -14,6 +14,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
     this.questionData = $stateParams.questionData;
+    this.currentDate = new Date();
     this.init();
 };
 

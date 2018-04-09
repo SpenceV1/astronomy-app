@@ -343,6 +343,7 @@ public class GroupServiceImpl implements GroupService {
     if (ResultListUtil.hasResult(questionResult)) {
       logger.debug("Creating answers...");
 
+      
       questionResult.stream().map(q -> {
         Answer answer = new Answer();
         answer.setGroup(group);
@@ -352,6 +353,7 @@ public class GroupServiceImpl implements GroupService {
         logger.debug("Persisting: {}", entity);
         entityManager.persist(entity);
       });
+      
     }
 
   }

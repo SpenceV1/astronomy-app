@@ -37,14 +37,22 @@ function Directive($state){
         	return (scope.model.id != null && scope.model.options.length > 0) || (scope.model.id == null && scope.model.isUnits);
         }
         
+        scope.pastOpenDate = function(){
+        	return $parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp;
+        }
+        
         scope.getAnswerBounds = function(){
-        	var answerBounds = {};
-        	var coefficient = new BigNumber(scope.model.correctCoefficient);
-        	var exponent = scope.model.correctExponenet;
-        	var spread = new BigNumber(scope.model.allowedCoefficientSpread);
-        	answerBounds.lower = coefficient.minus(spread).shiftedBy(exponent).toExponential();
-        	answerBounds.upper = coefficient.plus(spread).shiftedBy(exponent).toExponential();
-            return answerBounds;
+        	if(("correctCoefficient" in scope.model) && ("correctExponenet" in scope.model) && ("allowedCoefficientSpread" in scope.model)) {
+	        	var answerBounds = {};
+	        	var coefficient = new BigNumber(scope.model.correctCoefficient);
+	        	var exponent = scope.model.correctExponenet;
+	        	var spread = new BigNumber(scope.model.allowedCoefficientSpread);
+	        	answerBounds.lower = coefficient.minus(spread).shiftedBy(exponent).toExponential();
+	        	answerBounds.upper = coefficient.plus(spread).shiftedBy(exponent).toExponential();
+	            return answerBounds;
+        	} else {
+        		return { lower: 0, upper: 0 };
+        	}
         }
     }
 
