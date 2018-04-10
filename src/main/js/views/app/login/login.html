@@ -1,7 +1,9 @@
 <div class="container-fluid">
     <div id="login-container">
         <div id="login" class="well">
-        	<img class="mainlogo" width="300" height="200" src="assets/logo.png">
+        	<div class="text-centered">
+        		<img class="mainlogo img-thumbnail rounded mainlogo" src="assets/logo.png">
+        	</div>
             <div class="alert alert-danger" ng-if="login.error">
                 {{ login.error }}
             </div>
@@ -12,17 +14,26 @@
               <strong>Success!</strong> Please check your email!
             </div>
             <form role="form" ng-submit="login.login()">
+            	<div>
+		         	<h3 class="text-secondary">Sign In</h3>
+		    	</div>
+		    	<div class="form-group">
+	                <div class="input-group">
+	                	<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+	                    <input type="text" placeholder="Username"
+	                        class="form-control" id="username" name="username" ng-model="login.credentials.username" ng-required="true" />
+	                </div>
+	            </div>    
                 <div class="form-group">
-                    <label for="username">Username:</label> <input type="text"
-                        class="form-control" id="username" name="username" ng-model="login.credentials.username"/>
+	                <div class="input-group">
+	                	<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+	                   	<input type="password" placeholder="Password"
+	                        class="form-control" id="password" name="password" ng-model="login.credentials.password" ng-required="true" />
+	                </div>
                 </div>
-                <div class="form-group">
-                    <label for="password">Password:</label> <input type="password"
-                        class="form-control" id="password" name="password" ng-model="login.credentials.password"/>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <div class="pull-right">
-                    <button type="button" class="btn btn-default" ng-click="login.resetPassword()">Reset Password</button>
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Submit</button>
+                <div class="pull-left">
+                    <button type="button" class="btn btn-link" ng-click="login.resetPassword()">Reset Password</button>
                 </div>
             </form>
         </div>
