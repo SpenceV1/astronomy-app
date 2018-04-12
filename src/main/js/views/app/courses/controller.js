@@ -55,6 +55,16 @@ Controller.prototype.dropCourse = function(course){
     });
 };
 
+Controller.prototype.closeSuccessAlert = function(){
+	self = this;
+	self.created_updated = false;
+};
+
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+};
+
 module.exports = angular.module('app.views.app.courses.controller', [])
 .controller('CoursesCtrl', Controller);
 

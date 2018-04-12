@@ -4,13 +4,13 @@
         	<div class="text-centered">
         		<img class="mainlogo img-thumbnail rounded mainlogo" src="assets/logo.png">
         	</div>
-            <div class="alert alert-danger" ng-if="login.error">
+            <div uib-alert class="alert alert-danger alert-fade" close="login.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="login.error">
                 {{ login.error }}
             </div>
-            <div class="alert alert-danger" ng-if="login.sessionExpired">
+            <div uib-alert class="alert alert-danger alert-fade" close="login.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="login.sessionExpired">
                 Please login again!
             </div>
-            <div class="alert alert-success" ng-if="login.passwordReset">
+            <div uib-alert class="alert alert-success top-buffer alert-fade" close="login.closeSuccessAlert()" dismiss-on-timeout="3000" ng-if="login.passwordReset">
               <strong>Success!</strong> Please check your email!
             </div>
             <form role="form" ng-submit="login.login()">
@@ -21,14 +21,14 @@
 	                <div class="input-group">
 	                	<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
 	                    <input type="text" placeholder="Username"
-	                        class="form-control" id="username" name="username" ng-model="login.credentials.username" ng-required="true" />
+	                        class="form-control" id="username" name="username" ng-model="login.credentials.username" />
 	                </div>
 	            </div>    
                 <div class="form-group">
 	                <div class="input-group">
 	                	<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
 	                   	<input type="password" placeholder="Password"
-	                        class="form-control" id="password" name="password" ng-model="login.credentials.password" ng-required="true" />
+	                        class="form-control" id="password" name="password" ng-model="login.credentials.password" />
 	                </div>
                 </div>
                 <button type="submit" class="btn btn-lg btn-primary btn-block">Submit</button>

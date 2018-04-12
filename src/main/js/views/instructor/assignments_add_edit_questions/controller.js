@@ -101,11 +101,19 @@ Controller.prototype.editQuestion = function(questionData){
 
 Controller.prototype.dropped = function(event, index, item) {
     // Return false here to cancel drop. Return true if you insert the item yourself.
-    //this.callTest();
-    //console.log("works");
 	var self = this;
 	self.reorderQuestion(item.id, index + 1);
     return item;
+};
+
+Controller.prototype.closeSuccessAlert = function(){
+	self = this;
+	self.created_updated = false;
+};
+
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])

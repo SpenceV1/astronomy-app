@@ -65,5 +65,10 @@ Controller.prototype.dropPage = function(pageNum){
     });
 }
 
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+};
+
 module.exports = angular.module('app.views.instructor.pages.add_edit', [])
 .controller('Instructor.PagesAddEdit', Controller);

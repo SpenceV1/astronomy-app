@@ -57,5 +57,10 @@ Controller.prototype.submit = function(payload){
     }
 };
 
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+};
+
 module.exports = angular.module('app.views.instructor.question.add_edit', [])
 .controller('Instructor.QuestionAddEdit', Controller);

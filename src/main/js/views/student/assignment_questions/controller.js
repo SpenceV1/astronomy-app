@@ -148,6 +148,11 @@ Controller.prototype.getPage = function(newPage){
     }
 }
 
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+};
+
 module.exports = angular.module('app.views.student.assignment.questions.controller', [
     'app.models.assignment',
     'app.models.question',

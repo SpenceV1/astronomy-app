@@ -8,7 +8,7 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div class="alert alert-danger" ng-if="coursesEdit.error">
+            <div uib-alert class="alert alert-danger top-buffer alert-fade" close="coursesEdit.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="coursesEdit.error">
                 {{ coursesEdit.error }}
             </div>
             <form name="courseForm" ng-submit="coursesEdit.addCourse(courseForm.$valid, coursesEdit.course)" novalidate>
