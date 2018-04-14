@@ -3,11 +3,8 @@ function Service($timeout){
     this.timeout = $timeout;
 };
 
-Service.prototype.showError = function(caller, err, time) {
-	time = time || 5000;
-	var self = this;
-	caller.error = err;
-    self.timeout(function() { caller.error = ""; }, time);
+Service.protype.closeSuccessAlert = function(caller){
+	caller.success = "";
 };
 
 module.exports = angular.module('app.models.error', [

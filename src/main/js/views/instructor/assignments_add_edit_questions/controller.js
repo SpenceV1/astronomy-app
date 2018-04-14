@@ -6,7 +6,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this.courseId = $stateParams.courseId;
     this.moduleId = $stateParams.moduleId;
     this.pageNum = $stateParams.pageNum;
-    this.created_updated = $stateParams.created_updated;
+    this.success = $stateParams.success;
     this.questionTypes = appSettings.QUESTION_TYPES;
     this._$stateParams  = $stateParams;
     this._AssignmentService = AssignmentService;
@@ -15,7 +15,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this._ErrorService = ErrorService;
     this.selectedQuestionType = "MULTIPLE_CHOICE";
     this.questions = [];
-    this.init();
+    this.init(); 
 };
 
 Controller.prototype.init = function(){
@@ -104,11 +104,6 @@ Controller.prototype.dropped = function(event, index, item) {
 	var self = this;
 	self.reorderQuestion(item.id, index + 1);
     return item;
-};
-
-Controller.prototype.closeSuccessAlert = function(){
-	self = this;
-	self.created_updated = false;
 };
 
 Controller.prototype.closeErrorAlert = function(){
