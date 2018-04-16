@@ -38,7 +38,7 @@ function Directive($state){
         }
         
         scope.pastOpenDate = function(){
-        	return $parent.$parent.questionEditCtrl.currentDate > model.page.module.openTimestamp;
+        	return scope.$parent.$parent.questionEditCtrl.currentDate > scope.model.page.module.openTimestamp;
         }
         
         scope.getAnswerBounds = function(){
