@@ -4,10 +4,14 @@
 </h2>
 <div class="row">
     <div class="col-xs-12">
+<<<<<<< HEAD
         <div uib-alert class="alert alert-success alert-fade" close="questionsEditCtrl._ErrorService.closeSuccessAlert(questionsEditCtrl)" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.success">
+=======
+        <div uib-alert class="alert alert-success alert-fade" close="questionsEditCtrl._AlertService.closeSuccessAlert(questionsEditCtrl)" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.success">
+>>>>>>> parent of e0670a3... Revert "Merge branch 'KyleFinal' of https://github.com/xspenc3r/astronomy-app into KyleFinal"
             {{ questionsEditCtrl.success }}
         </div>
-        <div uib-alert class="alert alert-danger alert-fade" close="questionsEditCtrl.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.error">
+        <div uib-alert class="alert alert-danger alert-fade" close="questionsEditCtrl._AlertService.closeErrorAlert(questionsEditCtrl)" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.error">
             {{ questionsEditCtrl.error }}
         </div>
         <form name="addQuestionForm" novalidate class="form-inline">

@@ -5,7 +5,7 @@ var questionModel = require('./question');
 var courseMembersModel = require('./course_members');
 var userModel = require('./user');
 var adminModel = require('./admin');
-var errorModel = require('./error');
+var alertModel = require('./alert');
 
 module.exports = angular.module('app.models', [
     courseModel.name,
@@ -15,5 +15,5 @@ module.exports = angular.module('app.models', [
     courseMembersModel.name,
     userModel.name,
     adminModel.name,
-    errorModel.name
+    alertModel.name
 ])
