@@ -6,7 +6,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this.courseId = $stateParams.courseId;
     this.moduleId = $stateParams.moduleId;
     this.pageNum = $stateParams.pageNum;
-    this.success = $stateParams.success;
+    this.success = $stateParams.created_updated;
     this.questionTypes = appSettings.QUESTION_TYPES;
     this._$stateParams  = $stateParams;
     this._AssignmentService = AssignmentService;
@@ -58,8 +58,6 @@ Controller.prototype.createPagesStruct = function(number){
     return pages;
 }
 
-
-
 Controller.prototype.reorderQuestion = function(itemId, newOrder) {
     var self = this;
     self._QuestionService.reorderQuestion(self.courseId, self.moduleId, itemId, newOrder)
@@ -104,6 +102,11 @@ Controller.prototype.dropped = function(event, index, item) {
 	var self = this;
 	self.reorderQuestion(item.id, index + 1);
     return item;
+};
+
+Controller.prototype.closeSuccessAlert = function(){
+	self = this;
+	self.success = false;
 };
 
 Controller.prototype.closeErrorAlert = function(){
