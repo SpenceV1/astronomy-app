@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import edu.umdearborn.astronomyapp.controller.exception.CustomException;
 import edu.umdearborn.astronomyapp.controller.exception.UpdateException;
 import edu.umdearborn.astronomyapp.entity.Course;
 import edu.umdearborn.astronomyapp.entity.Module;
@@ -191,14 +192,14 @@ public class ModuleServiceImpl implements ModuleService {
 		  } else {
 			  //nothing to reorder, must be the case order==newOrder or order is last item and trying to move down
 			  System.out.println("Nothing to do");
-			  throw new UpdateException("Nothing to reorder");
+			  throw new CustomException("Nothing to reorder");
 		  }
 		  
 	  } else {
 		  if(pageItem == null) {
-			  throw new UpdateException("Item with id: " + itemId + " does not exist");
+			  throw new CustomException("Item with id: " + itemId + " does not exist");
 		  } else {
-			  throw new UpdateException("Invalid order number");
+			  throw new CustomException("Invalid order number");
 		  }
 	  }
   }
