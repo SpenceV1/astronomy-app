@@ -110,13 +110,10 @@ Controller.prototype.dropped = function(event, index, item) {
     return item;
 };
 
-<<<<<<< HEAD
 Controller.prototype.closeErrorAlert = function(){
 	self = this;
 	self.error = false;
 };
 
-=======
->>>>>>> parent of e0670a3... Revert "Merge branch 'KyleFinal' of https://github.com/xspenc3r/astronomy-app into KyleFinal"
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);
