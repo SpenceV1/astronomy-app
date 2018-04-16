@@ -127,7 +127,7 @@ var states = [
         name : 'app.course.assignments_add_edit_questions',
         url : '/{moduleId}/add_edit_pages/{pageNum}/add_edit_questions',
         params : {
-            created_updated : false
+            success : ""
         },
         views : {
             'childContent' : {

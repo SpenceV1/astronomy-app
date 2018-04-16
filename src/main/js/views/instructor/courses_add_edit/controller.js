@@ -65,5 +65,10 @@ Controller.prototype.openDatePicker = function() {
     self.openDatePickOpen = true;
 };
 
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+};
+
 module.exports = angular.module('app.views.instructor.courses.add_edit', [])
 .controller('Instructor.CoursesAddEdit', Controller);

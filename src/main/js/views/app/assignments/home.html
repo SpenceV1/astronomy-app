@@ -7,10 +7,10 @@
 </div>
 <div class="row" restrict access="INSTRUCTOR">
     <div class="col-xs-12">
-        <div class="alert alert-danger top-buffer" ng-if="courseAssignments.error">
+        <div uib-alert class="alert alert-danger top-buffer alert-fade" close="courseAssignments.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="courseAssignments.error">
             {{ courseAssignments.error }}
         </div>
-        <div class="alert alert-success top-buffer" ng-if="courseAssignments.created_updated" >
+        <div uib-alert class="alert alert-success top-buffer alert-fade" close="courseAssignments.closeSuccessAlert()" dismiss-on-timeout="3000" ng-if="courseAssignments.created_updated" >
             <strong>Success!</strong> Created/Updated the assignment!
         </div>
     </div>

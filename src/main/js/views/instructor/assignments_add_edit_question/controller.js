@@ -36,7 +36,7 @@ Controller.prototype.submit = function(payload){
             var params = {
                 moduleId : self.moduleId,
                 pageNum : self.pageNum,
-                created_updated : true
+                success : "Question was successfully created"
             }
             self._$state.go('app.course.assignments_add_edit_questions', params);
         }, function(err){
@@ -48,13 +48,18 @@ Controller.prototype.submit = function(payload){
         	var params = {
                     moduleId : self.moduleId,
                     pageNum : self.pageNum,
-                    created_updated : true
+                    success : "Question was successfully updated"
                 }
         	self._$state.go('app.course.assignments_add_edit_questions', params);
         }, function(err){
            self.error = "ERROR editing question";
         });
     }
+};
+
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.question.add_edit', [])

@@ -4,10 +4,10 @@
 </h2>
 <div class="row">
     <div class="col-xs-12">
-        <div class="alert alert-success" ng-if="questionsEditCtrl.created_updated">
-            Question was successfully updated/created
+        <div uib-alert class="alert alert-success alert-fade" close="questionsEditCtrl._AlertService.closeSuccessAlert(questionsEditCtrl)" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.success">
+            {{ questionsEditCtrl.success }}
         </div>
-        <div class="alert alert-danger" ng-if="questionsEditCtrl.error">
+        <div uib-alert class="alert alert-danger alert-fade" close="questionsEditCtrl._AlertService.closeErrorAlert(questionsEditCtrl)" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.error">
             {{ questionsEditCtrl.error }}
         </div>
         <form name="addQuestionForm" novalidate class="form-inline">

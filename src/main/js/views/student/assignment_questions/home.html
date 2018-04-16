@@ -1,5 +1,5 @@
 <h2>{{ assignmentQuestions.pageName }}</h2>
-<div class="alert alert-danger" ng-if="assignmentQuestions.error">
+<div uib-alert class="alert alert-danger alert-fade" close="assignmentQuestions.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="assignmentQuestions.error">
     {{ assignmentQuestions.error }}
 </div>
 <form name="quizForm" ng-submit="assignmentQuestions.submit()" novalidate >

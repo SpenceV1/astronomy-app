@@ -1,21 +1,21 @@
 
-function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService, ErrorService){
+function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit Assignment Questions";
     this.courseId = $stateParams.courseId;
     this.moduleId = $stateParams.moduleId;
     this.pageNum = $stateParams.pageNum;
-    this.created_updated = $stateParams.created_updated;
+    this.success = $stateParams.success;
     this.questionTypes = appSettings.QUESTION_TYPES;
     this._$stateParams  = $stateParams;
     this._AssignmentService = AssignmentService;
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
-    this._ErrorService = ErrorService;
+    this._AlertService = AlertService;
     this.selectedQuestionType = "MULTIPLE_CHOICE";
     this.questions = [];
-    this.init();
+    this.init(); 
 };
 
 Controller.prototype.init = function(){
@@ -66,7 +66,11 @@ Controller.prototype.reorderQuestion = function(itemId, newOrder) {
     .then(function(payload){
     	
     }, function(err){
-    	self._ErrorService.showError(self, "ERROR reordering question!");
+    	if(err.data.exception.endsWith("CustomException")) {
+    		self.error = err.data.message;
+    	} else {
+    		self.error = "ERROR reordering question!";
+    	}
         self.getQuestions();
     });
 };
@@ -101,11 +105,14 @@ Controller.prototype.editQuestion = function(questionData){
 
 Controller.prototype.dropped = function(event, index, item) {
     // Return false here to cancel drop. Return true if you insert the item yourself.
-    //this.callTest();
-    //console.log("works");
 	var self = this;
 	self.reorderQuestion(item.id, index + 1);
     return item;
+};
+
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])

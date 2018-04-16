@@ -17,5 +17,6 @@ module.exports = angular.module('app.views.instructor', [
     assignmentsAddEditQuestions.name,
     assignmentsAddEditQuestion.name,
     assignmentGroupsController.name,
-    'dndLists', 'ui.bootstrap'
+    'dndLists', 'ui.bootstrap',
+    'ngAnimate'
 ]);
