@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService, AlertService){
+function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService, ErrorService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit Assignment Questions";
@@ -12,7 +12,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this._AssignmentService = AssignmentService;
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
-    this._AlertService = AlertService;
+    this._ErrorService = ErrorService;
     this.selectedQuestionType = "MULTIPLE_CHOICE";
     this.questions = [];
     this.init(); 
@@ -64,11 +64,7 @@ Controller.prototype.reorderQuestion = function(itemId, newOrder) {
     .then(function(payload){
     	
     }, function(err){
-    	if(err.data.exception.endsWith("CustomException")) {
-    		self.error = err.data.message;
-    	} else {
-    		self.error = "ERROR reordering question!";
-    	}
+    	self._ErrorService.showError(self, "ERROR reordering question!");
         self.getQuestions();
     });
 };
@@ -106,6 +102,16 @@ Controller.prototype.dropped = function(event, index, item) {
 	var self = this;
 	self.reorderQuestion(item.id, index + 1);
     return item;
+};
+
+Controller.prototype.closeSuccessAlert = function(){
+	self = this;
+	self.success = false;
+};
+
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
