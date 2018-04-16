@@ -4,8 +4,8 @@
 </h2>
 <div class="row">
     <div class="col-xs-12">
-        <div uib-alert class="alert alert-success alert-fade" close="questionsEditCtrl.closeSuccessAlert()" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.success">
-            Question created/updated successfully!
+        <div uib-alert class="alert alert-success alert-fade" close="questionsEditCtrl._ErrorService.closeSuccessAlert(questionsEditCtrl)" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.success">
+            {{ questionsEditCtrl.success }}
         </div>
         <div uib-alert class="alert alert-danger alert-fade" close="questionsEditCtrl.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="questionsEditCtrl.error">
             {{ questionsEditCtrl.error }}

@@ -1,10 +1,10 @@
-function Service(){
+function Service($timeout){
     "ngInject";
-
+    this.timeout = $timeout;
 };
 
-Service.prototype.closeSuccessAlert = function(){
-	success = "";
+Service.protype.closeSuccessAlert = function(caller){
+	caller.success = "";
 };
 
 module.exports = angular.module('app.models.error', [

@@ -36,7 +36,7 @@ Controller.prototype.submit = function(payload){
             var params = {
                 moduleId : self.moduleId,
                 pageNum : self.pageNum,
-                created_updated : true
+                success : "Question was successfully created"
             }
             self._$state.go('app.course.assignments_add_edit_questions', params);
         }, function(err){
@@ -48,7 +48,7 @@ Controller.prototype.submit = function(payload){
         	var params = {
                     moduleId : self.moduleId,
                     pageNum : self.pageNum,
-                    created_updated : true
+                    success : "Question was successfully updated"
                 }
         	self._$state.go('app.course.assignments_add_edit_questions', params);
         }, function(err){
