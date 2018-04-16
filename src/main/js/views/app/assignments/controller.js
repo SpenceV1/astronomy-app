@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, AssignmentService, ConfirmationService){
+function Controller($scope, $state, $stateParams, AssignmentService, ConfirmationService, AlertService){
     "ngInject";
 
     this.pageName = "Assignments";
@@ -8,7 +8,8 @@ function Controller($scope, $state, $stateParams, AssignmentService, Confirmatio
     this._ConfirmationService = ConfirmationService;
     this.assignments = [];
     this.currentDate = new Date();
-    this.created_updated = $stateParams.created_updated;
+    this.success = $stateParams.success;
+    this._AlertService = AlertService;
     this.init();
 };
 
@@ -43,16 +44,6 @@ Controller.prototype.dropAssignment = function(moduleId){
         console.log("They said no");
     });
 }
-
-Controller.prototype.closeSuccessAlert = function(){
-	self = this;
-	self.created_updated = false;
-};
-
-Controller.prototype.closeErrorAlert = function(){
-	self = this;
-	self.error = false;
-};
 
 module.exports = angular.module('app.views.app.assignments.controller', [
     'app.models.assignment'

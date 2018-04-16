@@ -1,12 +1,16 @@
 package edu.umdearborn.astronomyapp.entity;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @MappedSuperclass
@@ -17,6 +21,10 @@ public abstract class AbstractOption extends AbstractGeneratedId {
   @JsonProperty("isCorrectOption")
   @NotNull
   private boolean isCorrectOption = false;
+  
+  
+  @JsonIgnore
+  private String optionQuestionId;
 
   @Override
   public boolean equals(Object obj) {
@@ -34,6 +42,10 @@ public abstract class AbstractOption extends AbstractGeneratedId {
 
   public void setCorrectOption(boolean isCorrectOption) {
     this.isCorrectOption = isCorrectOption;
+  }
+  
+  public void setQuestion(String q) {
+	  this.optionQuestionId = q;
   }
 
   @Override

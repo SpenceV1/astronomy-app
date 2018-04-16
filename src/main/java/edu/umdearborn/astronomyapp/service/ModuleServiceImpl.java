@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,6 +29,7 @@ import edu.umdearborn.astronomyapp.controller.exception.CustomException;
 import edu.umdearborn.astronomyapp.controller.exception.UpdateException;
 import edu.umdearborn.astronomyapp.entity.Course;
 import edu.umdearborn.astronomyapp.entity.Module;
+import edu.umdearborn.astronomyapp.entity.MultipleChoiceOption;
 import edu.umdearborn.astronomyapp.entity.MultipleChoiceQuestion;
 import edu.umdearborn.astronomyapp.entity.NumericQuestion;
 import edu.umdearborn.astronomyapp.entity.Page;
@@ -35,6 +37,7 @@ import edu.umdearborn.astronomyapp.entity.PageItem;
 import edu.umdearborn.astronomyapp.entity.PageItem.PageItemType;
 import edu.umdearborn.astronomyapp.entity.Question;
 import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
+import edu.umdearborn.astronomyapp.entity.UnitOption;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
 import edu.umdearborn.astronomyapp.util.json.JsonDecorator;
 
@@ -64,6 +67,21 @@ public class ModuleServiceImpl implements ModuleService {
   
   @Override
   public PageItem updatePageItem(PageItem item) {
+  if (PageItemType.QUESTION.equals(item.getPageItemType())) {
+      if (QuestionType.MULTIPLE_CHOICE.equals(((Question) item).getQuestionType())) {
+        MultipleChoiceQuestion q = (MultipleChoiceQuestion) item;
+        Set<MultipleChoiceOption> options = q.getOptions();
+        for(MultipleChoiceOption o : options) {
+        	o.setQuestion(q.getId());
+        }
+      } else if (QuestionType.NUMERIC.equals(((Question) item).getQuestionType())) {
+    	  NumericQuestion q = (NumericQuestion) item;
+          Set<UnitOption> options = q.getOptions();
+    	  for(UnitOption o : options) {
+          	o.setQuestion(q.getId());
+          }
+      }
+    }
     entityManager.merge(item);
     return item;
   }

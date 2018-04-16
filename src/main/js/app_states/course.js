@@ -62,7 +62,7 @@ var states = [
         name : 'app.course.assignments',
         url : '/assignments',
         params : {
-            created_updated : false
+            success : ""
         },
         views : {
             'childContent' : {
