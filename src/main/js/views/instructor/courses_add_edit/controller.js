@@ -7,7 +7,7 @@ function Controller($scope, $state, course, CourseService, ErrorService){
     this.course = course;
     this.allCourses = [];
     this._CourseService = CourseService;
-    this._ErrorService = ErrorService;
+    this._AlertService = AlertService;
     this.today = new Date();
     this.init();
 };
@@ -28,18 +28,18 @@ Controller.prototype.addCourse= function(valid, course) {
 	        self.error = null;
 	        self._CourseService.addCourse(course)
 	            .then(function(payload){
-	                self._$state.go('app.courses', { created_updated : true });
+	            	self._$state.go('app.courses', { success : "Course Successfully Created!" });
 	        }, function(err){
-	        	self._ErrorService.showError(self, "ERROR creating the course");
-	           //self.error = "ERROR creating the course";
+	        	self.error = "ERROR creating the course";
+	        	
 	        });
     	} else {
 	        self.error = null;
 	        self._CourseService.editCourse(course.id, course)
 	            .then(function(payload){
-	                self._$state.go('app.courses', { created_updated : true });
+	            	self._$state.go('app.courses', { success : "Course Edited Successfully!" });
 	        }, function(err){
-	           self._ErrorService.showError(self, "ERROR updating the course");
+	        	self.error = "ERROR updating the course";
 	        });
     	}
     }
@@ -63,11 +63,6 @@ Controller.prototype.closeDatePicker = function() {
 Controller.prototype.openDatePicker = function() {
 	var self = this;
     self.openDatePickOpen = true;
-};
-
-Controller.prototype.closeErrorAlert = function(){
-	self = this;
-	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.courses.add_edit', [])
