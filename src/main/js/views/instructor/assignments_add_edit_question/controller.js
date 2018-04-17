@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService){
+function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit ";
@@ -14,6 +14,7 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
     this.questionData = $stateParams.questionData;
+    this._AlertService = AlertService;
     this.currentDate = new Date();
     this.init();
 };
@@ -55,11 +56,6 @@ Controller.prototype.submit = function(payload){
            self.error = "ERROR editing question";
         });
     }
-};
-
-Controller.prototype.closeErrorAlert = function(){
-	self = this;
-	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.question.add_edit', [])
