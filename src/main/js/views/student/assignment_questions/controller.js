@@ -120,7 +120,9 @@ Controller.prototype.getAnswers = function(newPage){
         .then(function(payload){
             self.savedAnswers = payload;
     }, function(err){
-       self.error = "ERROR getting the answers";
+    	if(self.groupId != "") {
+    		self.error = "ERROR getting the answers";
+    	}
     });
 };
 

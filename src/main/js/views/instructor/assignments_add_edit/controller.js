@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, $timeout, assignment, AssignmentService){
+function Controller($scope, $state, $stateParams, $timeout, assignment, AssignmentService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add Assignment";
@@ -10,6 +10,7 @@ function Controller($scope, $state, $stateParams, $timeout, assignment, Assignme
     this._AssignmentService = AssignmentService;
     this.assignment = assignment;
     this._$timeout = $timeout;
+    this._AlertService = AlertService;
     this.init();
 
 };
@@ -25,14 +26,19 @@ Controller.prototype.add_eidtAssignment = function(valid, assignment){
     if(valid){
         if(self.isNew == true){
             service = self._AssignmentService.addAssignment(self.courseId, assignment);
+            service.then(function(payload){
+                self._$state.go('app.course.assignments', { courseId : self.courseId, success : "Assignment Successfully Created!" });
+            }, function(err){
+                self.error = "ERROR: trying to create assignment";
+            })
         } else if(self.isNew == false) {
             service = self._AssignmentService.editAssignment(self.courseId, self.moduleId, assignment);
+            service.then(function(payload){
+                self._$state.go('app.course.assignments', { courseId : self.courseId, success : "Assignment Edited Successfully!" });
+            }, function(err){
+                self.error = "ERROR: trying to edit assignment";
+            })
         }
-        service.then(function(payload){
-            self._$state.go('app.course.assignments', { courseId : self.courseId, created_updated : true });
-        }, function(err){
-            self.error = "ERROR: trying to create/edit an assignment";
-        })
     }
 }
 
@@ -44,11 +50,6 @@ Controller.prototype.closeDatePicker = function() {
 Controller.prototype.openDatePicker = function() {
 	var self = this;
     self.openDatePickOpen = true;
-};
-
-Controller.prototype.closeErrorAlert = function(){
-	self = this;
-	self.error = false;
 };
 
 module.exports = angular.module('app.views.instructor.assignments.add_edit', [])

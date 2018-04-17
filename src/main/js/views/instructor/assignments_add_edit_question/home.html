@@ -4,7 +4,10 @@
 </h2>
 <div class="row">
     <div class="col-xs-12">
-        <div uib-alert class="alert alert-danger alert-fade" close="questionEditCtrl.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="questionEditCtrl.error">
+        <div uib-alert class="alert alert-success alert-fade" close="questionEditCtrl._AlertService.closeSuccessAlert(questionEditCtrl)" dismiss-on-timeout="3000" ng-if="questionEditCtrl.success">
+            {{ questionEditCtrl.success }}
+        </div>
+        <div uib-alert class="alert alert-danger alert-fade" close="questionEditCtrl._AlertService.closeErrorAlert(questionEditCtrl)" dismiss-on-timeout="3000" ng-if="questionEditCtrl.error">
             {{ questionEditCtrl.error }}
         </div>
         <form name="questionForm"

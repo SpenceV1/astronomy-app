@@ -110,10 +110,5 @@ Controller.prototype.dropped = function(event, index, item) {
     return item;
 };
 
-Controller.prototype.closeErrorAlert = function(){
-	self = this;
-	self.error = false;
-};
-
 module.exports = angular.module('app.views.instructor.questions.add_edit', [])
 .controller('Instructor.QuestionsAddEdit', Controller);

@@ -8,9 +8,12 @@
     </div>
     <div class="row">
         <div class="col-md-6">
-            <div uib-alert class="alert alert-danger alert-fade" close="coursesEdit._AlertService.closeErrorAlert(coursesEdit)" dismiss-on-timeout="3000" ng-if="coursesEdit.error">
-            	{{ coursesEdit.error }}
-        	</div>
+	        <div uib-alert class="alert alert-success alert-fade" close="coursesEdit._AlertService.closeSuccessAlert(coursesEdit)" dismiss-on-timeout="3000" ng-if="coursesEdit.success">
+	            {{ coursesEdit.success }}
+	        </div>
+	        <div uib-alert class="alert alert-danger alert-fade" close="coursesEdit._AlertService.closeErrorAlert(coursesEdit)" dismiss-on-timeout="3000" ng-if="coursesEdit.error">
+	            {{ coursesEdit.error }}
+	        </div>
             <form name="courseForm" ng-submit="coursesEdit.addCourse(courseForm.$valid, coursesEdit.course)" novalidate>
                 <div class="form-group" ng-class="{ 'has-error' : courseForm.title.$invalid && !courseForm.title.$pristine }">
                     <label>Title</label>

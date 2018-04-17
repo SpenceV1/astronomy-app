@@ -4,7 +4,10 @@
 </h2>
 <div class="row">
     <div class="col-md-6">
-        <div uib-alert class="alert alert-danger top-buffer alert-fade" close="coursesCtrl.closeErrorAlert()" dismiss-on-timeout="3000" ng-if="assignmentsEditCtrl.error">
+        <div uib-alert class="alert alert-success alert-fade" close="assignmentsEditCtrl._AlertService.closeSuccessAlert(assignmentsEditCtrl)" dismiss-on-timeout="3000" ng-if="assignmentsEditCtrl.success">
+            {{ assignmentsEditCtrl.success }}
+        </div>
+        <div uib-alert class="alert alert-danger alert-fade" close="assignmentsEditCtrl._AlertService.closeErrorAlert(assignmentsEditCtrl)" dismiss-on-timeout="3000" ng-if="assignmentsEditCtrl.error">
             {{ assignmentsEditCtrl.error }}
         </div>
         <form name="assignmentForm" ng-submit="assignmentsEditCtrl.add_eidtAssignment(assignmentForm.$valid, assignmentsEditCtrl.assignment)" novalidate>

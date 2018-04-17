@@ -1,12 +1,13 @@
 
-function Controller($state, $stateParams, CourseService, ConfirmationService){
+function Controller($state, $stateParams, CourseService, ConfirmationService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Courses";
     this._CourseService = CourseService;
     this._ConfirmationService = ConfirmationService;
-    this.created_updated = $stateParams.created_updated;
+    this.success = $stateParams.success;
     this.showAllCourses = false;
+    this._AlertService = AlertService;
     this.init();
 };
 
@@ -53,16 +54,6 @@ Controller.prototype.dropCourse = function(course){
     }, function(){
         console.log("They said no");
     });
-};
-
-Controller.prototype.closeSuccessAlert = function(){
-	self = this;
-	self.created_updated = false;
-};
-
-Controller.prototype.closeErrorAlert = function(){
-	self = this;
-	self.error = false;
 };
 
 module.exports = angular.module('app.views.app.courses.controller', [])

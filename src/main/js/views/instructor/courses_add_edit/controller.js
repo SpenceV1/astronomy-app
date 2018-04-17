@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, course, CourseService, ErrorService){
+function Controller($scope, $state, course, CourseService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit Course";
@@ -29,15 +29,16 @@ Controller.prototype.addCourse= function(valid, course) {
 	        self._CourseService.addCourse(course)
 	            .then(function(payload){
 	            	self._$state.go('app.courses', { success : "Course Successfully Created!" });
+	            	
 	        }, function(err){
 	        	self.error = "ERROR creating the course";
-	        	
 	        });
     	} else {
 	        self.error = null;
 	        self._CourseService.editCourse(course.id, course)
 	            .then(function(payload){
 	            	self._$state.go('app.courses', { success : "Course Edited Successfully!" });
+	            	
 	        }, function(err){
 	        	self.error = "ERROR updating the course";
 	        });
