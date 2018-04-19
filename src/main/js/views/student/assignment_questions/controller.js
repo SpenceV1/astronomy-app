@@ -25,6 +25,7 @@ function Controller($scope, $state, $stateParams, AssignmentService, QuestionSer
     this._GroupService = GroupService;
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
+    this.gateLocked = true;
     this.init();
 };
 
@@ -100,6 +101,17 @@ Controller.prototype.saveAnswers = function(newPage){
             self.lastSaved = new Date();
     }, function(err){
        self.error = "ERROR saving the answers";
+    });
+    
+    self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
+    .then(function(payload){
+        	self.questionGrades = payload;
+        	
+        	for(var i = 0; i < self.questions.length; i++)
+        	{
+        		if(self.questionGrades[i].pointsEarned > 0 && self.questions[i].isGatekeeper)
+        			self.gateLocked = false;
+        	}
     });
 };
 
