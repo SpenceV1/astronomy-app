@@ -25,7 +25,8 @@ function Controller($scope, $state, $stateParams, AssignmentService, QuestionSer
     this._GroupService = GroupService;
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
-    this.gateLocked = true;
+    this.gateLocked = [];
+    this.pageHasGatekeeper = false;
     this.init();
 };
 
@@ -46,7 +47,10 @@ Controller.prototype.getLock = function(page){
     var self = this;
     if(self.viewOnly || self.grading){
         self.editable = false;
-    } else {
+    } 
+    else if(!self.viewOnly){
+    	self.editable = true;
+    }else {
         self._GroupService.getLock(self.courseId, self.moduleId, self.groupId, page)
                 .then(function(payload){
                 if(payload.hasLock && payload.isModuleEditable){
@@ -88,9 +92,29 @@ Controller.prototype.getQuestions = function(newPage){
             self.currentPage = newPage;
             self.lastSaved = "Not Saved";
             self.getLock(newPage);
+            self.checkForGatekeeper(payload);
     }, function(err){
        self.error = "ERROR getting the questions";
     });
+};
+
+Controller.prototype.checkForGatekeeper = function(questions){
+	var self = this;
+	for(var i = 0; i < questions.length; i++)
+	{
+		if(questions[i].isGatekeeper)
+		{
+			self.pageHasGatekeeper = true;
+		}
+	}
+	
+	if(self.pageHasGatekeeper && !self.viewOnly)
+	{
+		for(var i = 1; i < self.maxPage; i++)
+		{
+			self.gateLocked[self.currentPage + i] = true;
+		}
+	}
 };
 
 Controller.prototype.saveAnswers = function(newPage){
@@ -104,14 +128,17 @@ Controller.prototype.saveAnswers = function(newPage){
     });
     
     self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
-    .then(function(payload){
+    	.then(function(payload){
         	self.questionGrades = payload;
         	
+        	//self.savedAnswers[self.questions[i].id].pointsEarned > 0 && self.questions[i].isGatekeeper
         	for(var i = 0; i < self.questions.length; i++)
         	{
-        		if(self.questionGrades[i].pointsEarned > 0 && self.questions[i].isGatekeeper)
-        			self.gateLocked = false;
+        		if(self.savedAnswers[self.questions[i].id].pointsEarned > 0 && self.questions[i].isGatekeeper)
+        			self.gateLocked[self.currentPage + 1] = false;
         	}
+    }, function(err){
+       self.error = "ERROR checking gatekeeper";
     });
 };
 
