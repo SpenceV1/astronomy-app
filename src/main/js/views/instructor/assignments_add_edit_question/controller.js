@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService){
+function Controller($scope, $state, $stateParams, appSettings, AssignmentService, QuestionService, ConfirmationService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit ";
@@ -14,6 +14,8 @@ function Controller($scope, $state, $stateParams, appSettings, AssignmentService
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
     this.questionData = $stateParams.questionData;
+    this._AlertService = AlertService;
+    this.currentDate = new Date();
     this.init();
 };
 
@@ -35,7 +37,7 @@ Controller.prototype.submit = function(payload){
             var params = {
                 moduleId : self.moduleId,
                 pageNum : self.pageNum,
-                created_updated : true
+                success : "Question was successfully created"
             }
             self._$state.go('app.course.assignments_add_edit_questions', params);
         }, function(err){
@@ -47,7 +49,7 @@ Controller.prototype.submit = function(payload){
         	var params = {
                     moduleId : self.moduleId,
                     pageNum : self.pageNum,
-                    created_updated : true
+                    success : "Question was successfully updated"
                 }
         	self._$state.go('app.course.assignments_add_edit_questions', params);
         }, function(err){

@@ -51,6 +51,16 @@ Controller.prototype.resetPassword = function(){
     };
 }
 
+Controller.prototype.closeSuccessAlert = function(){
+	self = this;
+	self.passwordReset = false;
+};
+
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+	self.sessionExpired = false;
+};
 
 module.exports = angular.module('app.views.app.login.controller', [
     'app.components.popup_modal'

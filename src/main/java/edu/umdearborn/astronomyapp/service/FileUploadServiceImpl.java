@@ -1,6 +1,8 @@
 package edu.umdearborn.astronomyapp.service;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -78,7 +80,18 @@ public class FileUploadServiceImpl implements FileUploadService {
       s3.putObject(new PutObjectRequest(name, fileName, inputStream, metadata)
           .withCannedAcl(CannedAccessControlList.PublicRead));
 
-      return s3.getUrl(name, fileName).toString();
+      
+      URL oldUrl = s3.getUrl(name, fileName);
+      
+      String strUrl = oldUrl.toString();
+      
+		try {
+			strUrl = new URL("http", oldUrl.getHost(), oldUrl.getPort(), oldUrl.getFile()).toString();
+		} catch (MalformedURLException e) {
+			strUrl = strUrl.replace("https://", "http://");
+		}
+      
+      return strUrl;
     }
 
   }

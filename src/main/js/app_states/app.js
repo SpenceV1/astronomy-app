@@ -38,7 +38,7 @@ var states = [
         name : 'app.courses',
         url : 'courses',
         params : {
-            created_updated : false
+            success : ""
         },
         views : {
             'mainContent@app' : {

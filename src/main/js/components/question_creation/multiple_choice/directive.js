@@ -18,6 +18,10 @@ function Directive($state){
         scope.removeOption = function(index){
             scope.model.options.splice(index,1);
         }
+        
+        scope.pastOpenDate = function(){
+        	return scope.$parent.$parent.questionEditCtrl.currentDate.getTime() > scope.model.page.module.openTimestamp;
+        }
 
     }
 

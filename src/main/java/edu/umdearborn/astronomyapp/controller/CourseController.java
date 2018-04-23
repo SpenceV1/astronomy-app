@@ -123,14 +123,16 @@ public class CourseController {
 	}
 
 	@RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}", method = DELETE)
-	public List<Course> deleteCourse(@PathVariable("courseId") String courseId, Principal principal) {
+	public List<Course> deleteCourse(@PathVariable("courseId") String courseId, 
+			@RequestParam(name = "hideClosed", defaultValue = "true") boolean hideClosed,
+			@RequestParam(name = "hideOpenSoon", defaultValue = "false") boolean hideOpenSoon, Principal principal) {
 
 		acl.enforceInCourse(principal.getName(), courseId);
 		acl.enforceCourseNotOpen(courseId);
 
 		courseService.deleteCourse(courseId);
 
-		return courseService.getCourses(principal.getName(), false, false);
+		return courseService.getCourses(principal.getName(), hideClosed, hideOpenSoon);
 	}
 
 	@RequestMapping(value = { STUDENT_PATH + "/course/{courseId}/users", GRADER_PATH + "/course/{courseId}/users",

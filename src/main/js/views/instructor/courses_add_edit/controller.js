@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, course, CourseService){
+function Controller($scope, $state, course, CourseService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit Course";
@@ -7,9 +7,9 @@ function Controller($scope, $state, course, CourseService){
     this.course = course;
     this.allCourses = [];
     this._CourseService = CourseService;
+    this._AlertService = AlertService;
     this.today = new Date();
     this.init();
-
 };
 
 Controller.prototype.init = function(){
@@ -24,13 +24,25 @@ Controller.prototype.init = function(){
 Controller.prototype.addCourse= function(valid, course) {
     var self = this;
     if(valid){
-        self.error = null;
-        self._CourseService.addCourse(course)
-            .then(function(payload){
-                self._$state.go('app.courses', { created_updated : true });
-        }, function(err){
-           self.error = "ERROR creating/updating the course";
-        });
+    	if(!self.course.id){
+	        self.error = null;
+	        self._CourseService.addCourse(course)
+	            .then(function(payload){
+	            	self._$state.go('app.courses', { success : "Course Successfully Created!" });
+	            	
+	        }, function(err){
+	        	self.error = "ERROR creating the course";
+	        });
+    	} else {
+	        self.error = null;
+	        self._CourseService.editCourse(course.id, course)
+	            .then(function(payload){
+	            	self._$state.go('app.courses', { success : "Course Edited Successfully!" });
+	            	
+	        }, function(err){
+	        	self.error = "ERROR updating the course";
+	        });
+    	}
     }
 };
 
@@ -44,6 +56,15 @@ Controller.prototype.getAllPossibleToCloneCourses = function(){
     });
 }
 
+Controller.prototype.closeDatePicker = function() {
+	var self = this;
+    self.closeDatePickOpen = true;
+};
+
+Controller.prototype.openDatePicker = function() {
+	var self = this;
+    self.openDatePickOpen = true;
+};
 
 module.exports = angular.module('app.views.instructor.courses.add_edit', [])
 .controller('Instructor.CoursesAddEdit', Controller);

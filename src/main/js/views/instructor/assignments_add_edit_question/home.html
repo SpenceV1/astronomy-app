@@ -4,7 +4,10 @@
 </h2>
 <div class="row">
     <div class="col-xs-12">
-        <div class="alert alert-danger" ng-if="questionEditCtrl.error">
+        <div uib-alert class="alert alert-success alert-fade" close="questionEditCtrl._AlertService.closeSuccessAlert(questionEditCtrl)" dismiss-on-timeout="3000" ng-if="questionEditCtrl.success">
+            {{ questionEditCtrl.success }}
+        </div>
+        <div uib-alert class="alert alert-danger alert-fade" close="questionEditCtrl._AlertService.closeErrorAlert(questionEditCtrl)" dismiss-on-timeout="3000" ng-if="questionEditCtrl.error">
             {{ questionEditCtrl.error }}
         </div>
         <form name="questionForm"
@@ -40,7 +43,6 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-primary" >Submit</button>
-            <span class="help-block">You can't edit the question once you submit!</span>
 <!--            {{ questionEditCtrl.questionData | json }}-->
         </form>
     </div>

@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, AssignmentService, QuestionService, ConfirmationService){
+function Controller($scope, $state, $stateParams, AssignmentService, QuestionService, ConfirmationService, AlertService){
     "ngInject";
     this._$state = $state;
     this.pageName = "Add/Edit Assignment Pages";
@@ -9,6 +9,7 @@ function Controller($scope, $state, $stateParams, AssignmentService, QuestionSer
     this._AssignmentService = AssignmentService;
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
+    this._AlertService = AlertService;
     this.pages = [];
     this.init();
 };

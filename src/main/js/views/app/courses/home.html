@@ -18,12 +18,12 @@
     </div>
     <div class="row" restrict access="INSTRUCTOR">
         <div class="col-xs-12">
-            <div class="alert alert-danger top-buffer" ng-if="coursesCtrl.error">
-                {{ coursesCtrl.error }}
-            </div>
-            <div class="alert alert-success top-buffer" ng-if="coursesCtrl.created_updated" >
-                <strong>Success!</strong> Created/Updated the course!
-            </div>
+	        <div uib-alert class="alert alert-success alert-fade" close="coursesCtrl._AlertService.closeSuccessAlert(coursesCtrl)" dismiss-on-timeout="3000" ng-if="coursesCtrl.success">
+	            {{ coursesCtrl.success }}
+	        </div>
+	        <div uib-alert class="alert alert-danger alert-fade" close="coursesCtrl._AlertService.closeErrorAlert(coursesCtrl)" dismiss-on-timeout="3000" ng-if="coursesCtrl.error">
+	            {{ coursesCtrl.error }}
+	        </div>
         </div>
     </div>
     <div class="row">

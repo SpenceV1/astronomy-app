@@ -41,43 +41,49 @@
     	<legend></legend>
         <ul class="list-group">
             <li class="list-group-item" ng-repeat="option in model.options track by $index" >
-                {{ option.humanReadableText }}
-                <div class="pull-right">
-                    <button type="button" class="btn btn-xs btn-warning"
-                    ng-click="removeOption($index)">
-                      <span class="glyphicon glyphicon-trash"></span>
-                    </button>
-                </div>
+            	<div class="input-group">
+	                <input type="text" ng-model="option.humanReadableText" class="form-control">
+	                <span class="input-group-btn">
+	                    <button type="button" class="btn btn-warning"
+	                    ng-click="removeOption($index)"
+	                    ng-disabled="pastOpenDate()">
+	                      <span class="glyphicon glyphicon-trash"></span>
+	                    </button>
+	                </span>
+				</div>
                 <div class="checkbox margin-bottom-0">
                     <label>
-                        <input type="checkbox" ng-model="option.isCorrectOption"> Correct
+                        <input type="checkbox" ng-model="option.isCorrectOption" 
+                       		ng-disabled="pastOpenDate()">
+                         Correct
                     </label>
                 </div>
             </li>
         </ul>
-        <input type="text" ng-model="newOption" class="form-control" placeholder="Unit Value">
+        <input type="text" ng-model="newOption" class="form-control" placeholder="Unit Value" ng-disabled="pastOpenDate()">
     </div>
 </div>
 <div class="form-group">
     <button type="button" class="btn btn-primary"
             ng-click="addNewOption(newOption)"
-            ng-disabled="!newOption">Add Unit</button>
+            ng-disabled="!newOption && pastOpenDate()">Add Unit</button>
 </div>
 <div class="form-group">
     <label>Unit Points</label>
-    	<input class="form-control" type="number" ng-model="model.unitPoints" class="form-control">
+    	<input class="form-control" type="number" ng-model="model.unitPoints" class="form-control" ng-disabled="pastOpenDate()">
 </div>
 <legend></legend>
 </div>
 
 <div class="form-group">
     <label>Question Points</label>
-    <input class="form-control" type="number" ng-model="model.points">
+    <input class="form-control" type="number" ng-model="model.points" ng-disabled="pastOpenDate()">
 </div>
 <legend>Total Point Value: {{model.points + model.unitPoints}}</legend>
 <div class="form-group">
     <legend>Gatekeeper</legend>
     <label class="checkbox-inline">
-      <input type="checkbox" ng-model="model.isGatekeeper"> Gatekeeper
+      <input type="checkbox" ng-model="model.isGatekeeper" ng-disabled="pastOpenDate()">
+       Gatekeeper
     </label>
 </div>

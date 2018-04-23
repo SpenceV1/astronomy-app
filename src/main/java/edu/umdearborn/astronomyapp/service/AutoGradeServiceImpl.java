@@ -139,9 +139,12 @@ public class AutoGradeServiceImpl implements AutoGradeService {
   }
 
   @Override
-  public Answer setPointsEarned(String answerId, BigDecimal points) {
+  public Answer setPointsEarned(String answerId, BigDecimal points, String... comment) {
     Answer answer = entityManager.find(Answer.class, answerId);
     answer.setPointesEarned(points);
+    if(comment.length > 0) {
+    	answer.setComment(comment[0]);
+    }
     entityManager.merge(answer);
 
     return answer;

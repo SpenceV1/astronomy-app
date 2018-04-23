@@ -81,6 +81,11 @@ Controller.prototype.finalize = function(){
     });
 }
 
+Controller.prototype.closeErrorAlert = function(){
+	self = this;
+	self.error = false;
+};
+
 module.exports = angular.module('app.views.student.assignment.group.controller', [
     'app.models.assignment',
     'app.models.group'

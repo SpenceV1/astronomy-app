@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,9 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import edu.umdearborn.astronomyapp.controller.exception.CustomException;
 import edu.umdearborn.astronomyapp.controller.exception.UpdateException;
 import edu.umdearborn.astronomyapp.entity.Course;
 import edu.umdearborn.astronomyapp.entity.Module;
+import edu.umdearborn.astronomyapp.entity.MultipleChoiceOption;
 import edu.umdearborn.astronomyapp.entity.MultipleChoiceQuestion;
 import edu.umdearborn.astronomyapp.entity.NumericQuestion;
 import edu.umdearborn.astronomyapp.entity.Page;
@@ -34,6 +37,7 @@ import edu.umdearborn.astronomyapp.entity.PageItem;
 import edu.umdearborn.astronomyapp.entity.PageItem.PageItemType;
 import edu.umdearborn.astronomyapp.entity.Question;
 import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
+import edu.umdearborn.astronomyapp.entity.UnitOption;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
 import edu.umdearborn.astronomyapp.util.json.JsonDecorator;
 
@@ -63,6 +67,21 @@ public class ModuleServiceImpl implements ModuleService {
   
   @Override
   public PageItem updatePageItem(PageItem item) {
+  if (PageItemType.QUESTION.equals(item.getPageItemType())) {
+      if (QuestionType.MULTIPLE_CHOICE.equals(((Question) item).getQuestionType())) {
+        MultipleChoiceQuestion q = (MultipleChoiceQuestion) item;
+        Set<MultipleChoiceOption> options = q.getOptions();
+        for(MultipleChoiceOption o : options) {
+        	o.setQuestion(q.getId());
+        }
+      } else if (QuestionType.NUMERIC.equals(((Question) item).getQuestionType())) {
+    	  NumericQuestion q = (NumericQuestion) item;
+          Set<UnitOption> options = q.getOptions();
+    	  for(UnitOption o : options) {
+          	o.setQuestion(q.getId());
+          }
+      }
+    }
     entityManager.merge(item);
     return item;
   }
@@ -191,14 +210,14 @@ public class ModuleServiceImpl implements ModuleService {
 		  } else {
 			  //nothing to reorder, must be the case order==newOrder or order is last item and trying to move down
 			  System.out.println("Nothing to do");
-			  throw new UpdateException("Nothing to reorder");
+			  throw new CustomException("Nothing to reorder");
 		  }
 		  
 	  } else {
 		  if(pageItem == null) {
-			  throw new UpdateException("Item with id: " + itemId + " does not exist");
+			  throw new CustomException("Item with id: " + itemId + " does not exist");
 		  } else {
-			  throw new UpdateException("Invalid order number");
+			  throw new CustomException("Invalid order number");
 		  }
 	  }
   }
@@ -267,8 +286,13 @@ public class ModuleServiceImpl implements ModuleService {
         .createQuery("select coalesce(sum(q.points), 0) from Question q join q.page p join "
             + "p.module m where m.id = :moduleId", BigDecimal.class);
     query.setParameter("moduleId", moduleId);
+    
+    TypedQuery<BigDecimal> query2 = entityManager
+            .createQuery("select coalesce(sum(nq.unitPoints), 0) from NumericQuestion nq, Question q join q.page p join "
+                + "p.module m where m.id = :moduleId and q.id = nq.id", BigDecimal.class);
+        query2.setParameter("moduleId", moduleId);
 
-    return query.getSingleResult();
+    return query.getSingleResult().add(query2.getSingleResult());
   }
 
   @Override

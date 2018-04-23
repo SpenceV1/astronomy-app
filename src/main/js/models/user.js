@@ -60,6 +60,11 @@ Service.prototype.getUrl = function(url){
     }
 };
 
+Service.prototype.getAccount = function(url){
+    var self = this;
+    return self._SessionService.getUser();
+};
+
 
 
 module.exports = angular.module('app.models.user', [

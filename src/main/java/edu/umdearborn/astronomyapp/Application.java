@@ -1,6 +1,9 @@
 package edu.umdearborn.astronomyapp;
 
 import java.util.Arrays;
+import java.util.TimeZone;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +22,11 @@ public class Application {
         .anyMatch(p -> p.equalsIgnoreCase("dev"))) {
       logger.warn("Application is running in local development mode");
     }
+  }
+  
+  @PostConstruct
+  void started() {
+      TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
   }
 
 }

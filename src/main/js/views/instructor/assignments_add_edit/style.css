@@ -1,6 +1,12 @@
-
-.top-buffer {
-    margin-top: 20px;
+#close-datepicker, #open-datepicker {
+    width: 50%;  
+    float: left;
+    padding-top: 0.7em;
+}
+#close-timepicker, #open-timepicker {
+    width: 50%;  
+    float: left;
+    padding-left: 1em;
 }
 .alert-fade.ng-enter {
 	transition: 0.5s linear all;

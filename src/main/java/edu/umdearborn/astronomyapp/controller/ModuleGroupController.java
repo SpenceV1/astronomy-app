@@ -459,14 +459,22 @@ public class ModuleGroupController {
             points = BigDecimal.ZERO;
           }
           
+          String comment = "";
           if (QuestionType.NUMERIC.equals(a.getQuestion().getQuestionType())) {
         	  if(autoGradeService.checkUnitAnswer(a.getId())) {
         		  BigDecimal unitPoints = autoGradeService.getNumericUnitPoints(a.getQuestion().getId());
+        		  if(points.compareTo(BigDecimal.ZERO) == 0) {
+        			  comment = unitPoints.stripTrailingZeros().toPlainString() + " points earned for correct unit.";
+        		  }
         		  points = points.add(unitPoints);
+        	  } else {
+        		  if(points.compareTo(BigDecimal.ZERO) > 0) {
+        			  comment = points.stripTrailingZeros().toPlainString() + " points earned for correct numeric value.";
+        		  }
         	  }
           }
           
-          autoGradeService.setPointsEarned(a.getId(), points);
+          autoGradeService.setPointsEarned(a.getId(), points, new String[] { comment });
           
         });
 
