@@ -55,7 +55,7 @@
     <div class="row" ng-if="assignmentQuestions.editable || assignmentQuestions.grading">
         <div class="col-md-12">
             <div class="pull-left" >
-            Last Saved: {{ assignmentQuestions.lastSaved | date :"MM/dd/yyyy 'at' h:mm:ssa" }}
+            	Last Saved: {{ assignmentQuestions.lastSaved | date :"MM/dd/yyyy 'at' h:mm:ssa" }}
             </div>
         </div>
     </div>
@@ -66,29 +66,33 @@
                     Save Grades
                 </a>
             </li>
-            <li ng-if="assignmentQuestions.editable" ng-click="assignmentQuestions.saveAnswers()">
-               <a aria-label="Save">
+            <li>
+            	<button type="button" class="btn btn-default" ng-if="assignmentQuestions.editable" ng-click="assignmentQuestions.saveAnswers()">
                     Save
-                </a>
+                </button>
             </li>
-            <li ng-repeat="n in assignmentQuestions.pages track by $index"
-                ng-class="{active : $index+1 == assignmentQuestions.currentPage}"
-                ng-click="assignmentQuestions.getPage($index+1)">
-                <span ng-switch="assignmentQuestions.editable">
-                    <span ng-switch-when="true">
-                        {{ $index +1 }}
-                    </span>
-                    <span ng-switch-when="false">
-                        {{ $index + 1 }}
-                    </span>
-                </span>
+            <li>
+            	<div class="btn-group">
+	            	<button type="button" class="btn btn-primary" ng-repeat="n in assignmentQuestions.pages track by $index"
+		                ng-class="{active : $index+1 == assignmentQuestions.currentPage}" ng-disabled="assignmentQuestions.gateLocked[$index+1]"
+		                ng-click="assignmentQuestions.getPage($index+1)">
+		                <span ng-switch="assignmentQuestions.editable">
+		                    <span ng-switch-when="true">
+		                        {{ $index +1 }}
+		                    </span>
+		                    <span ng-switch-when="false">
+		                        {{ $index + 1 }}
+		                    </span>
+		                </span>
+	                </button>
+                </div>
             </li>
-            <li ng-if="assignmentQuestions.editable" ng-click="assignmentQuestions.submit()">
-                <a aria-label="Submit">
-                    Submit
-                </a>
+            <li>
+            	<button type="button" class="btn btn-default" ng-if="assignmentQuestions.editable" ng-click="assignmentQuestions.submit()">
+            		Submit
+            	</button>	
             </li>
-          </ul>
+        </ul>
     </nav>
     <div style="text-align:center" ng-if="assignmentQuestions.editable">
         <p class="help-block">Please Save before submitting or moving to the next page!</p>

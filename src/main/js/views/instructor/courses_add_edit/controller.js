@@ -28,7 +28,8 @@ Controller.prototype.addCourse= function(valid, course) {
 	        self.error = null;
 	        self._CourseService.addCourse(course)
 	            .then(function(payload){
-	                self._$state.go('app.courses', { success : "Course Successfully Created!" });
+	            	self._$state.go('app.courses', { success : "Course Successfully Created!" });
+	            	
 	        }, function(err){
 	        	self.error = "ERROR creating the course";
 	        });
@@ -36,7 +37,8 @@ Controller.prototype.addCourse= function(valid, course) {
 	        self.error = null;
 	        self._CourseService.editCourse(course.id, course)
 	            .then(function(payload){
-	                self._$state.go('app.courses', { success : "Course Edited Successfully!" });
+	            	self._$state.go('app.courses', { success : "Course Edited Successfully!" });
+	            	
 	        }, function(err){
 	        	self.error = "ERROR updating the course";
 	        });
