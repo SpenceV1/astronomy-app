@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -67,49 +68,82 @@ public class ModuleServiceImpl implements ModuleService {
   
   @Override
   public PageItem updatePageItem(PageItem item) {
+  TypedQuery<Boolean> query =
+	        entityManager.createQuery("select count (m) > 0 from Module m where m.id = :moduleId and "
+	            + "m.openTimestamp <= current_timestamp()", Boolean.class);
+	    query.setParameter("moduleId", item.getPage().getModule().getId());
+  boolean moduleOpen = query.getSingleResult();
+	  
   if (PageItemType.QUESTION.equals(item.getPageItemType())) {
       if (QuestionType.MULTIPLE_CHOICE.equals(((Question) item).getQuestionType())) {
-	  MultipleChoiceQuestion q = (MultipleChoiceQuestion) item;
-      Set<MultipleChoiceOption> options = q.getOptions();
-      for(MultipleChoiceOption o : options) {
-    	  logger.info("Updating question to {} for option {}", q.getId(), o.getId());
-      	o.setQuestion(q.getId());
+	  MultipleChoiceQuestion question = (MultipleChoiceQuestion) item;
+      Set<MultipleChoiceOption> newOptions = question.getOptions();
+      
+      for(MultipleChoiceOption o : newOptions) {
+    	  logger.info("Updating question to {} for option {}", question.getId(), o.getId());
+      	o.setQuestion(question.getId());
       }
 	    
-      MultipleChoiceQuestion currentItem = entityManager.find(MultipleChoiceQuestion.class, item.getId());
-      Set<MultipleChoiceOption> opts = currentItem.getOptions();
-      List<MultipleChoiceOption> removedItems = new ArrayList<MultipleChoiceOption>();
-      for(MultipleChoiceOption o : opts) {
-    	  boolean stillExists = false;
-    	  for(MultipleChoiceOption newO : options) {
-    		  if(o.getId().equals(newO.getId())) {
-    			  logger.info("Item still exists: {}", o.getId());
-    			  stillExists = true;
-    		  }
+      if(!moduleOpen) {
+	      MultipleChoiceQuestion currentQuestion = entityManager.find(MultipleChoiceQuestion.class, item.getId());
+	      Set<MultipleChoiceOption> currentOptions = currentQuestion.getOptions();
+	      
+	      HashMap<String, MultipleChoiceOption> newOptionsMap = new HashMap<String, MultipleChoiceOption>();
+	      for (MultipleChoiceOption newOpt: newOptions) {
+	    	  if(newOpt.getId() != null) {
+	    		  newOptionsMap.put(newOpt.getId(), newOpt);
+	    	  }
 	      }
-    	  if(!stillExists) {
-    		  removedItems.add(o);
-    	  }
-        }
-      
-      for(MultipleChoiceOption remove : removedItems) {
-		  logger.info("Removing option {}", remove.getId());
-		    entityManager
-	        .createNativeQuery(
-	            "delete from multiple_choice_option where multiple_choice_option_id = ?")
-	        .setParameter(1, remove.getId()).executeUpdate();
+	      
+	      for(MultipleChoiceOption oldOption : currentOptions) {
+			  if(!newOptionsMap.containsKey(oldOption.getId())) {
+				  logger.info("Removing option {}", oldOption.getId());
+				    entityManager
+			        .createNativeQuery(
+			            "delete from multiple_choice_option where multiple_choice_option_id = ?")
+			        .setParameter(1, oldOption.getId()).executeUpdate();
+			  }
+	      }
+	      entityManager.flush();
       }
-      entityManager.flush();
       
       logger.info("Merging");
-      entityManager.merge(q);
+      entityManager.merge(question);
         
       } else if (QuestionType.NUMERIC.equals(((Question) item).getQuestionType())) {
-    	  NumericQuestion q = (NumericQuestion) item;
-          Set<UnitOption> options = q.getOptions();
-    	  for(UnitOption o : options) {
-          	o.setQuestion(q.getId());
+    	  NumericQuestion question = (NumericQuestion) item;
+          Set<UnitOption> newOptions = question.getOptions();
+          
+          for(UnitOption o : newOptions) {
+        	  logger.info("Updating question to {} for option {}", question.getId(), o.getId());
+          	o.setQuestion(question.getId());
           }
+    	  
+          if(!moduleOpen) {
+	          NumericQuestion currentQuestion = entityManager.find(NumericQuestion.class, item.getId());
+	          Set<UnitOption> currentOptions = currentQuestion.getOptions();
+	          
+	          HashMap<String, UnitOption> newOptionsMap = new HashMap<String, UnitOption>();
+	          for (UnitOption newOpt: newOptions) {
+	        	  if(newOpt.getId() != null) {
+	        		  newOptionsMap.put(newOpt.getId(), newOpt);
+	        	  }
+	          }
+	          
+	          for(UnitOption oldOption : currentOptions) {
+	    		  if(!newOptionsMap.containsKey(oldOption.getId())) {
+	    			  logger.info("Removing option {}", oldOption.getId());
+	    			    entityManager
+	    		        .createNativeQuery(
+	    		            "delete from unit_option where unit_option_id = ?")
+	    		        .setParameter(1, oldOption.getId()).executeUpdate();
+	    		  }
+	          }
+	          entityManager.flush();
+          }
+          
+          logger.info("Merging");
+          entityManager.merge(question);
       }
     }
   
