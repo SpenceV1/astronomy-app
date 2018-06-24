@@ -69,11 +69,41 @@ public class ModuleServiceImpl implements ModuleService {
   public PageItem updatePageItem(PageItem item) {
   if (PageItemType.QUESTION.equals(item.getPageItemType())) {
       if (QuestionType.MULTIPLE_CHOICE.equals(((Question) item).getQuestionType())) {
-        MultipleChoiceQuestion q = (MultipleChoiceQuestion) item;
-        Set<MultipleChoiceOption> options = q.getOptions();
-        for(MultipleChoiceOption o : options) {
-        	o.setQuestion(q.getId());
+	  MultipleChoiceQuestion q = (MultipleChoiceQuestion) item;
+      Set<MultipleChoiceOption> options = q.getOptions();
+      for(MultipleChoiceOption o : options) {
+    	  logger.info("Updating question to {} for option {}", q.getId(), o.getId());
+      	o.setQuestion(q.getId());
+      }
+	    
+      MultipleChoiceQuestion currentItem = entityManager.find(MultipleChoiceQuestion.class, item.getId());
+      Set<MultipleChoiceOption> opts = currentItem.getOptions();
+      List<MultipleChoiceOption> removedItems = new ArrayList<MultipleChoiceOption>();
+      for(MultipleChoiceOption o : opts) {
+    	  boolean stillExists = false;
+    	  for(MultipleChoiceOption newO : options) {
+    		  if(o.getId().equals(newO.getId())) {
+    			  logger.info("Item still exists: {}", o.getId());
+    			  stillExists = true;
+    		  }
+	      }
+    	  if(!stillExists) {
+    		  removedItems.add(o);
+    	  }
         }
+      
+      for(MultipleChoiceOption remove : removedItems) {
+		  logger.info("Removing option {}", remove.getId());
+		    entityManager
+	        .createNativeQuery(
+	            "delete from multiple_choice_option where multiple_choice_option_id = ?")
+	        .setParameter(1, remove.getId()).executeUpdate();
+      }
+      entityManager.flush();
+      
+      logger.info("Merging");
+      entityManager.merge(q);
+        
       } else if (QuestionType.NUMERIC.equals(((Question) item).getQuestionType())) {
     	  NumericQuestion q = (NumericQuestion) item;
           Set<UnitOption> options = q.getOptions();
@@ -82,7 +112,7 @@ public class ModuleServiceImpl implements ModuleService {
           }
       }
     }
-    entityManager.merge(item);
+  
     return item;
   }
 
