@@ -144,7 +144,13 @@ public class ModuleServiceImpl implements ModuleService {
           
           logger.info("Merging");
           entityManager.merge(question);
+      } else {
+    	  logger.info("Merging");
+          entityManager.merge(item);
       }
+    } else {
+    	logger.info("Merging");
+        entityManager.merge(item);
     }
   
     return item;
