@@ -223,8 +223,7 @@ public class CourseController {
 				u.setRoles(new HashSet<AstroAppUser.Role>(Arrays.asList(AstroAppUser.Role.USER)));
 				CourseUser cu = new CourseUser();
 				cu.setUser(u);
-				System.out.println("===================================" + u.getEmail());
-				
+
 				List<AstroAppUser> instructorList = userManagementService.getInstructorList();
 				ArrayList<String> instructorEmailList = new ArrayList<String>();
 				
