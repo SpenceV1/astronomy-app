@@ -22,5 +22,7 @@ public interface UserManagementService {
   public void changePassword(String email, String password);
 
   public List<AstroAppUser> getAdminInstructorList();
+  
+  public List<AstroAppUser> getInstructorList();
 
 }

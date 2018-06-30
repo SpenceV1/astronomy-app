@@ -12,11 +12,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+import javax.persistence.TypedQuery;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -59,6 +64,7 @@ public class CourseController {
 	private UserManagementService userManagementService;
 	private CsvParserService csvParserService;
 	private GradeService gradeService;
+
 
 	public CourseController(AclService acl, CourseService courseService, UserManagementService userManagementService,
 			CsvParserService csvParserService, GradeService gradeService) {
@@ -217,7 +223,25 @@ public class CourseController {
 				u.setRoles(new HashSet<AstroAppUser.Role>(Arrays.asList(AstroAppUser.Role.USER)));
 				CourseUser cu = new CourseUser();
 				cu.setUser(u);
-				cu.setRole(CourseRole.STUDENT);
+				System.out.println("===================================" + u.getEmail());
+				
+				List<AstroAppUser> instructorList = userManagementService.getInstructorList();
+				ArrayList<String> instructorEmailList = new ArrayList<String>();
+				
+				//Add Instructor email addresses to a list to be checked against
+				for(int i = 0; i < instructorList.size(); i++)
+					instructorEmailList.add(instructorList.get(i).getEmail());
+				
+				//Check if added user is found in the instructor list.
+				//if name in list, give role instructor. If not give role student.
+				if(instructorEmailList.contains(u.getEmail()))
+				{
+					cu.setRole(CourseRole.INSTRUCTOR);
+				}
+				else
+				{
+					cu.setRole(CourseRole.STUDENT);
+				}
 				return cu;
 			}).toArray(CourseUser[]::new);
 
