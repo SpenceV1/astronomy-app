@@ -58,18 +58,23 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 			u.setCourse(course);
 
-			boolean canAdd = entityManager
-					.createQuery("select count(cu) = 0 from CourseUser cu join cu.user u join cu.course c "
-							+ "where lower(u.email) = lower(:email) and c.id = :courseId", Boolean.class)
-					.setParameter("email", u.getUser().getEmail()).setParameter("courseId", courseId).getSingleResult();
+			List<CourseUser> courseUsers = entityManager
+					.createQuery("select cu from CourseUser cu join cu.user u join cu.course c "
+							+ "where lower(u.email) = lower(:email) and c.id = :courseId", CourseUser.class)
+					.setParameter("email", u.getUser().getEmail()).setParameter("courseId", courseId).getResultList();
 
-			if (canAdd) {
+			if (courseUsers.isEmpty()) {
+				//New CourseUser
+				logger.info("Persisting User: '{}' in course: '{}'", u.getUser().getEmail(), courseId);
 				entityManager.persist(u);
 				return u;
+			} else {
+				//Existing CourseUser
+				CourseUser cu = courseUsers.get(0);
+				cu.setActive(true);
+				logger.info("User: '{}' already enrolled in course: '{}' setting user to active", cu.getUser().getEmail(), courseId);
+				return cu;
 			}
-
-			logger.info("USer: '{}' already enroleld in course: '{}'", u.getUser().getEmail(), courseId);
-			return null;
 		}).filter(Predicates.notNull()).collect(Collectors.toList());
 
 		return userList;
