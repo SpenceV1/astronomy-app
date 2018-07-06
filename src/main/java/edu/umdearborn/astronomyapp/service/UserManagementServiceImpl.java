@@ -58,18 +58,23 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 			u.setCourse(course);
 
-			boolean canAdd = entityManager
-					.createQuery("select count(cu) = 0 from CourseUser cu join cu.user u join cu.course c "
-							+ "where lower(u.email) = lower(:email) and c.id = :courseId", Boolean.class)
-					.setParameter("email", u.getUser().getEmail()).setParameter("courseId", courseId).getSingleResult();
+			List<CourseUser> courseUsers = entityManager
+					.createQuery("select cu from CourseUser cu join cu.user u join cu.course c "
+							+ "where lower(u.email) = lower(:email) and c.id = :courseId", CourseUser.class)
+					.setParameter("email", u.getUser().getEmail()).setParameter("courseId", courseId).getResultList();
 
-			if (canAdd) {
+			if (courseUsers.isEmpty()) {
+				//New CourseUser
+				logger.info("Persisting User: '{}' in course: '{}'", u.getUser().getEmail(), courseId);
 				entityManager.persist(u);
 				return u;
+			} else {
+				//Existing CourseUser
+				CourseUser cu = courseUsers.get(0);
+				cu.setActive(true);
+				logger.info("User: '{}' already enrolled in course: '{}' setting user to active", cu.getUser().getEmail(), courseId);
+				return cu;
 			}
-
-			logger.info("USer: '{}' already enroleld in course: '{}'", u.getUser().getEmail(), courseId);
-			return null;
 		}).filter(Predicates.notNull()).collect(Collectors.toList());
 
 		return userList;
@@ -85,7 +90,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 	    user.setPassword(RandomStringUtils.randomAlphanumeric(12));
 
-	    emailService.send(user.getEmail(), "Welcome to AstroApp",
+	    emailService.send(user.getEmail(), "Welcome to Mi-Cluster",
 	        "Username: " + user.getEmail() + " Password: " + user.getPassword());
 	    user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -137,6 +142,10 @@ public class UserManagementServiceImpl implements UserManagementService {
 	public List<AstroAppUser> getAdminInstructorList(){
 		return entityManager.createQuery("select u from AstroAppUser u join u.roles r where r in ('INSTRUCTOR', 'ADMIN')", AstroAppUser.class).getResultList();
 	}
+	
+	public List<AstroAppUser> getInstructorList(){
+		return entityManager.createQuery("select u from AstroAppUser u join u.roles r where r in ('INSTRUCTOR')", AstroAppUser.class).getResultList();
+	}
 
 	// selecy u from AtroAppUser u where u.roles in ('ADMIN', 'INSTRUCTOR')
 	//make new method
@@ -149,7 +158,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         .setParameter("email", email).getSingleResult();
 
     user.setPassword(RandomStringUtils.randomAlphanumeric(12));
-    emailService.send(user.getEmail(), "Astro App Password Reset",
+    emailService.send(user.getEmail(), "Mi-Cluster Password Reset",
         "Your password was reset.\nUsername: " + user.getEmail() + " Password: "
             + user.getPassword());
     
@@ -165,7 +174,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             AstroAppUser.class)
         .setParameter("email", email).getSingleResult();
 
-    emailService.send(user.getEmail(), "Astro App Password Change",
+    emailService.send(user.getEmail(), "Mi-Cluster Password Change",
         "Your password has changed");
     
     user.setPassword(passwordEncoder.encode(password));
