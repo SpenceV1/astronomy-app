@@ -90,7 +90,7 @@ public class UserManagementServiceImpl implements UserManagementService {
 
 	    user.setPassword(RandomStringUtils.randomAlphanumeric(12));
 
-	    emailService.send(user.getEmail(), "Welcome to AstroApp",
+	    emailService.send(user.getEmail(), "Welcome to Mi-Cluster",
 	        "Username: " + user.getEmail() + " Password: " + user.getPassword());
 	    user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -154,7 +154,7 @@ public class UserManagementServiceImpl implements UserManagementService {
         .setParameter("email", email).getSingleResult();
 
     user.setPassword(RandomStringUtils.randomAlphanumeric(12));
-    emailService.send(user.getEmail(), "Astro App Password Reset",
+    emailService.send(user.getEmail(), "Mi-Cluster Password Reset",
         "Your password was reset.\nUsername: " + user.getEmail() + " Password: "
             + user.getPassword());
     
@@ -170,7 +170,7 @@ public class UserManagementServiceImpl implements UserManagementService {
             AstroAppUser.class)
         .setParameter("email", email).getSingleResult();
 
-    emailService.send(user.getEmail(), "Astro App Password Change",
+    emailService.send(user.getEmail(), "Mi-Cluster Password Change",
         "Your password has changed");
     
     user.setPassword(passwordEncoder.encode(password));
