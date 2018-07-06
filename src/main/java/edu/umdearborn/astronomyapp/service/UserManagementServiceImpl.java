@@ -142,6 +142,10 @@ public class UserManagementServiceImpl implements UserManagementService {
 	public List<AstroAppUser> getAdminInstructorList(){
 		return entityManager.createQuery("select u from AstroAppUser u join u.roles r where r in ('INSTRUCTOR', 'ADMIN')", AstroAppUser.class).getResultList();
 	}
+	
+	public List<AstroAppUser> getInstructorList(){
+		return entityManager.createQuery("select u from AstroAppUser u join u.roles r where r in ('INSTRUCTOR')", AstroAppUser.class).getResultList();
+	}
 
 	// selecy u from AtroAppUser u where u.roles in ('ADMIN', 'INSTRUCTOR')
 	//make new method
