@@ -272,7 +272,7 @@ public class CourseServiceImpl implements CourseService {
             logger.debug("Migrating options for question: '{}'", oldId);
 
             NumericQuestion nq = entityManager.createQuery(
-                "select q from NumericQuestion q join fetch q.options where q.id = :id",
+                "select q from NumericQuestion q left join fetch q.options where q.id = :id",
                 NumericQuestion.class).setParameter("id", oldId).getSingleResult();
             entityManager.detach(nq);
             nq.setPage(e.getPage());
