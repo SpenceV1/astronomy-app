@@ -1,5 +1,6 @@
 package edu.umdearborn.astronomyapp.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -116,8 +117,9 @@ public class AclServiceImpl implements AclService {
 
     TypedQuery<Boolean> query =
         entityManager.createQuery("select count (m) > 0 from Module m where m.id = :moduleId and "
-            + "m.visibleTimestamp <= current_timestamp()", Boolean.class);
+            + "m.visibleTimestamp <= :now", Boolean.class);
     query.setParameter("moduleId", moduleId);
+    query.setParameter("now", new Date());
     boolean result = query.getSingleResult();
 
     if (!result) {
@@ -135,8 +137,9 @@ public class AclServiceImpl implements AclService {
 
     TypedQuery<Boolean> query =
         entityManager.createQuery("select count (m) > 0 from Module m where m.id = :moduleId and "
-            + "m.openTimestamp <= current_timestamp()", Boolean.class);
+            + "m.openTimestamp <= :now", Boolean.class);
     query.setParameter("moduleId", moduleId);
+    query.setParameter("now", new Date());
     boolean result = query.getSingleResult();
 
     if (!result) {
@@ -247,9 +250,10 @@ public class AclServiceImpl implements AclService {
   @Override
   public void enforceCourseNotOpen(String courseId) {
     TypedQuery<Boolean> query = entityManager.createQuery(
-        "select count(c) > 0 from Course c where c.openTimestamp > now() and c.id = :id",
+        "select count(c) > 0 from Course c where c.openTimestamp > :now and c.id = :id",
         Boolean.class);
     query.setParameter("id", courseId);
+    query.setParameter("now", new Date());
     boolean result = query.getSingleResult();
 
     if (!result) {
@@ -263,10 +267,11 @@ public class AclServiceImpl implements AclService {
   @Override
   public void enforceModuleNotOpen(String moduleId) {
     TypedQuery<Boolean> query = entityManager.createQuery(
-        "select count(m) > 0 from Module m where m.id = :id and (m.openTimestamp > now() or "
+        "select count(m) > 0 from Module m where m.id = :id and (m.openTimestamp > :now or "
             + "m.openTimestamp is null)",
         Boolean.class);
     query.setParameter("id", moduleId);
+    query.setParameter("now", new Date());
     boolean result = query.getSingleResult();
 
     if (!result) {
@@ -280,9 +285,10 @@ public class AclServiceImpl implements AclService {
   @Override
   public void enforceModuleClosed(String moduleId) {
     TypedQuery<Boolean> query = entityManager.createQuery(
-        "select count(m) > 0 from Module m where m.closeTimestamp < now() and m.id = :id",
+        "select count(m) > 0 from Module m where m.closeTimestamp < :now and m.id = :id",
         Boolean.class);
     query.setParameter("id", moduleId);
+    query.setParameter("now", new Date());
     boolean result = query.getSingleResult();
 
     if (!result) {
@@ -296,9 +302,10 @@ public class AclServiceImpl implements AclService {
   @Override
   public void enforeceCourseNotClosed(String courseId) {
     TypedQuery<Boolean> query = entityManager.createQuery(
-        "select count(c) > 0 from Course c where c.closeTimestamp > now() and c.id = :id",
+        "select count(c) > 0 from Course c where c.closeTimestamp > :now and c.id = :id",
         Boolean.class);
     query.setParameter("id", courseId);
+    query.setParameter("now", new Date());
     boolean result = query.getSingleResult();
 
     if (!result) {
@@ -313,8 +320,8 @@ public class AclServiceImpl implements AclService {
   @Override
   public void enforeModuleNotClosed(String moduleId) {
     if (!entityManager.createQuery(
-        "select count(m) > 0 from Module m where m.closeTimestamp > now() and m.id = :id",
-        Boolean.class).setParameter("id", moduleId).getSingleResult()) {
+        "select count(m) > 0 from Module m where m.closeTimestamp > :now and m.id = :id",
+        Boolean.class).setParameter("id", moduleId).setParameter("now", new Date()).getSingleResult()) {
       logger.debug("Module: '{}' is closed", moduleId);
       throw new AccessDeniedException("Module: " + moduleId + " is closed");
     }

@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -70,8 +71,9 @@ public class ModuleServiceImpl implements ModuleService {
   public PageItem updatePageItem(PageItem item) {
   TypedQuery<Boolean> query =
 	        entityManager.createQuery("select count (m) > 0 from Module m where m.id = :moduleId and "
-	            + "m.openTimestamp <= current_timestamp()", Boolean.class);
+	            + "m.openTimestamp <= :now", Boolean.class);
 	    query.setParameter("moduleId", item.getPage().getModule().getId());
+	    query.setParameter("now", new Date());
   boolean moduleOpen = query.getSingleResult();
 	  
   if (PageItemType.QUESTION.equals(item.getPageItemType())) {
@@ -163,12 +165,15 @@ public class ModuleServiceImpl implements ModuleService {
 
     if (showVisibleOnly) {
       logger.debug("Hiding not yet visible modules");
-      jpql.append(" and m.openTimestamp <= current_timestamp()");
+      jpql.append(" and m.openTimestamp <= :now");
     }
 
     logger.debug("Resuting JPQL: {}", jpql.toString());
     TypedQuery<Module> query = entityManager.createQuery(jpql.toString(), Module.class);
     query.setParameter("courseId", courseId);
+    if (showVisibleOnly) {
+    	query.setParameter("now", new Date());
+    }
 
     return query.getResultList();
   }

@@ -1,6 +1,7 @@
 package edu.umdearborn.astronomyapp.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -63,20 +64,23 @@ public class CourseServiceImpl implements CourseService {
         new StringBuilder("select c from CourseUser cu join cu.user u join cu.course c "
             + "where lower(u.email) = lower(:email) and cu.isActive = true "
             + "and u.isEnabled = true");
-
+    
     if (hideClosed) {
       logger.debug("Hiding already closed courses");
-      jpql.append(" and c.closeTimestamp >= current_timestamp()");
+      jpql.append(" and c.closeTimestamp >= :now");
     }
 
     if (hideOpenSoon) {
       logger.debug("Hiding courses that are not yet open");
-      jpql.append(" and c.openTimestamp <= current_timestamp()");
+      jpql.append(" and c.openTimestamp <= :now");
     }
 
     logger.debug("Resuting JPQL: {}", jpql.toString());
     TypedQuery<Course> query = entityManager.createQuery(jpql.toString(), Course.class);
     query.setParameter("email", email);
+    if(hideClosed || hideOpenSoon) {
+    	query.setParameter("now", new Date());
+    }
 
     return query.getResultList();
   }
@@ -97,6 +101,17 @@ public class CourseServiceImpl implements CourseService {
 
   @Override
   public Course updateCourse(Course course) {
+    TypedQuery<Course> query =
+            entityManager.createQuery("select c from Course c where c.id = :courseId and c.openTimestamp <= :now", Course.class);
+    	query.setParameter("now", new Date());
+        query.setParameter("courseId", course.getId());
+        List<Course> result = query.getResultList();
+
+        if (ResultListUtil.hasResult(result)) {
+        	logger.info("Resetting open date");
+        	course.setOpenTimestamp(result.get(0).getOpenTimestamp());
+        }
+        
     entityManager.merge(course);
     return course;
   }

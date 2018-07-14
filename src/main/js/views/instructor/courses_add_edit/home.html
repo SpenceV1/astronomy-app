@@ -25,10 +25,10 @@
                     <label>Course Code</label>
                     <input type="text" name="courseCode" class="form-control"
                            ng-minlength="1"
-                           ng-maxlength="6"
+                           ng-maxlength="7"
                            placeholder="Course Code"
                            ng-model="coursesEdit.course.courseCode" required>
-                    <span ng-show="courseForm.courseCode.$invalid && !courseForm.courseCode.$pristine" class="help-block">Course Code is required. Min Length: 1, Max Length: 6</span>
+                    <span ng-show="courseForm.courseCode.$invalid && !courseForm.courseCode.$pristine" class="help-block">Course Code is required. Min Length: 1, Max Length: 7</span>
                 </div>
                 <div class="form-group" ng-class="{ 'has-error' : courseForm.subjectCode.$invalid && !courseForm.subjectCode.$pristine }">
                     <label>Subject Code</label>
