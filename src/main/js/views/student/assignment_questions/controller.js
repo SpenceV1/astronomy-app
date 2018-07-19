@@ -20,6 +20,7 @@ function Controller($scope, $state, $stateParams, AssignmentService, QuestionSer
     this.data = {};
     this.questionGrades = {};
     this.questions = [];
+    this.gateKeepers = [];
     this.savedAnswers = {};
     this._AssignmentService = AssignmentService;
     this._GroupService = GroupService;
@@ -41,6 +42,7 @@ Controller.prototype.init = function(){
     });
     self.getShowSaved();
     self.getQuestions(self.currentPage);
+    self.getGatekeepers();
 };
 
 Controller.prototype.getLock = function(page){
@@ -98,6 +100,30 @@ Controller.prototype.getQuestions = function(newPage){
     });
 };
 
+Controller.prototype.getGatekeepers = function(){
+    var self = this;
+    self._QuestionService.getGatekeepers(self.courseId, self.moduleId)
+        .then(function(payload){
+            self.data = {};
+            self.gateKeepers = payload;
+    }, function(err){
+       self.error = "ERROR getting the questions";
+    });
+};
+
+Controller.prototype.updateQuestions = function(newPage){
+    var self = this;
+    self._QuestionService.getQuestions(self.courseId, self.moduleId, newPage)
+        .then(function(payload){
+            self.data = {};
+            self.questions = payload;
+            self.currentPage = newPage;
+            self.checkForGatekeeper(payload);
+    }, function(err){
+       self.error = "ERROR getting the questions";
+    });
+};
+
 Controller.prototype.checkForGatekeeper = function(questions){
 	var self = this;
 	for(var i = 0; i < questions.length; i++)
@@ -106,8 +132,12 @@ Controller.prototype.checkForGatekeeper = function(questions){
 		{
 			self.pageHasGatekeeper = true;
 		}
+		else
+		{	
+			self.pageHasGatekeeper = false;
+		}
 	}
-	
+	/*
 	if(self.pageHasGatekeeper && !self.viewOnly)
 	{
 		for(var i = 1; i < self.maxPage; i++)
@@ -115,6 +145,27 @@ Controller.prototype.checkForGatekeeper = function(questions){
 			self.gateLocked[self.currentPage + i] = true;
 		}
 	}
+	
+	if(!self.pageHasGatekeeper && !self.viewOnly)
+		self.gateLocked[self.currentPage + 1] = false;
+	*/
+	
+	if(self.gateKeepers.length > 0 && !self.viewOnly)
+	{
+		for(var i = 1; i <= self.maxPage - self.currentPage; i++)
+		{
+			if(self.gateKeepers[0][0] < self.currentPage + i)
+				self.gateLocked[self.currentPage + i] = true;
+		}
+	}
+	else
+		{
+			for(var i = 1; i <= self.maxPage - self.currentPage; i++)
+			{
+					self.gateLocked[self.currentPage + i] = false;
+			}
+		}
+	
 };
 
 Controller.prototype.saveAnswers = function(newPage){
@@ -127,16 +178,23 @@ Controller.prototype.saveAnswers = function(newPage){
        self.error = "ERROR saving the answers";
     });
     
-    self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
-    	.then(function(payload){
-        	self.questionGrades = payload;
-        	
+	    self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
+	    	.then(function(payload){
+	        	self.questionGrades = payload;
+	        	
+	        	self._QuestionService.getQuestions(self.courseId, self.moduleId, self.currentPage)
+	            .then(function(payload){
+	                self.data = {};
+	                self.questions = payload;
+	                self.getGatekeepers();
+	                self.checkForGatekeeper(payload);
+	        }, function(err){
+	           self.error = "ERROR getting the questions";
+	        });
+
         	//self.savedAnswers[self.questions[i].id].pointsEarned > 0 && self.questions[i].isGatekeeper
-        	for(var i = 0; i < self.questions.length; i++)
-        	{
-        		if(self.savedAnswers[self.questions[i].id].pointsEarned > 0 && self.questions[i].isGatekeeper)
-        			self.gateLocked[self.currentPage + 1] = false;
-        	}
+        	self.getAnswers(self.currentPage);
+        	self.getShowSaved();
     }, function(err){
        self.error = "ERROR checking gatekeeper";
     });
@@ -170,6 +228,7 @@ Controller.prototype.submit = function(){
     var confirmation = "Are you sure you want to submit?";
     var footNote = "Please make sure you save before you submit!";
     var modalInstance = self._ConfirmationService.open("", confirmation, footNote);
+    self.saveAnswers(self.currentPage);
     modalInstance.result.then(function(){
         self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
             .then(function(payload){

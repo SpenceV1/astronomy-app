@@ -348,7 +348,41 @@ public class ModuleServiceImpl implements ModuleService {
     
     return result;
   }
+  
+  ///////////////////Debug getGatekeeper
+  @SuppressWarnings("unchecked")
+@Override
+  public List<Query> getGatekeepers(String moduleId) {
+	  
+	  Query query;
+	  List<String> result = new ArrayList<>();
+	  /*List<PageItem> result = new ArrayList<>();
 
+	  TypedQuery<Question> questionPageItemQuery = entityManager.createQuery(
+	        "select q from Question q join q.page p join p.module m where m.id = :moduleId"
+	            + "q.pageItemType = :questionType and q.isGatekeeper = true", Question.class);
+	  
+	  questionPageItemQuery.setParameter("moduleId", moduleId).setParameter("questionType", QUESTION);
+	  
+	  List<Question> questionResult = questionPageItemQuery.getResultList();
+	    
+	  result = result.stream().sorted(Comparator.comparing(PageItem::getOrder)).collect(Collectors.toList());
+	  
+	    if (ResultListUtil.hasResult(questionResult)) {
+	        result.addAll(questionResult);
+	      }*/
+	  
+	  query = entityManager
+      .createNativeQuery(
+    		  "SELECT page_order, question_id FROM page_item, question, page, module " +
+    		  "WHERE (page_item.page_item_id = question.question_id) and " + 
+    		  "(page_item.page_id = page.page_id) and " +
+    		  "(question.is_gatekeeper = 'true') and (module.module_id = :moduleId)")
+      		.setParameter("moduleId", moduleId);
+
+	        return query.getResultList();
+  }
+  
   @Override
   public BigDecimal getMaxPoints(String moduleId) {
 

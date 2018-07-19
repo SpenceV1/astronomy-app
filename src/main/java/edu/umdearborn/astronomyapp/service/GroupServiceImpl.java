@@ -29,6 +29,7 @@ import edu.umdearborn.astronomyapp.entity.GroupMember;
 import edu.umdearborn.astronomyapp.entity.Module;
 import edu.umdearborn.astronomyapp.entity.ModuleGroup;
 import edu.umdearborn.astronomyapp.entity.Question;
+import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
 
 @Service
@@ -214,6 +215,27 @@ public class GroupServiceImpl implements GroupService {
 
     logger.debug("Saving answers for group: '{}'", groupId);
     List<Answer> savedAnswers = getAnswers(groupId, true);
+    
+    /////Debug gatekeeper. Get answer ids
+    
+    for(int i = 0; i<savedAnswers.size(); i++)
+    {
+    	System.out.println(savedAnswers.get(i).getQuestion().isGatekeeper());
+    	if(savedAnswers.get(i).getQuestion().isGatekeeper()) 
+    	{
+    		System.out.println("QuestionId: "+savedAnswers.get(i).getQuestion().getId());
+    		System.out.println("AnswerId: "+savedAnswers.get(i).getId());
+    		if(savedAnswers.get(i).getQuestion().getQuestionType() == QuestionType.MULTIPLE_CHOICE)
+    			System.out.println(savedAnswers.get(i).getValue());
+    		else
+    			System.out.println("this sucks ass");
+    	}
+    }
+    
+    
+    
+    ////END DEBUG
+    
     List<String> gatekeeperIds =
         Optional.ofNullable(autoGradeService
             .getGatekeepers(entityManager.find(ModuleGroup.class, groupId).getModule().getId(),
@@ -252,6 +274,12 @@ public class GroupServiceImpl implements GroupService {
             if (autoGradeService.checkAnswer(e.getId())) {
               logger.info("Answer: '{}' is correct", e.getId());
               e.setPointesEarned(e.getQuestion().getPoints());
+              
+              //Change gatekeeper value to false if question is answered correctly
+              entityManager
+              .createQuery("update Question set isGatekeeper = :value where id = :id")
+              .setParameter("value", false).setParameter("id", e.getQuestion().getId()).executeUpdate();
+              System.out.println("********************Auto Grade called" + "id: " + e.getQuestion().getId() + "isGatekeeper: " + e.getQuestion().isGatekeeper());
             }
             entityManager.merge(e);
           }

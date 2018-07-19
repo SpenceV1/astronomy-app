@@ -46,6 +46,7 @@ public class JsonDecorator<T> {
     StringBuilder builder = new StringBuilder();
     builder.append("JsonDecorator [payload=").append(payload).append(", properties=")
         .append(properties).append("]");
+
     return builder.toString();
   }
 

@@ -72,7 +72,7 @@
                 </button>
             </li>
             <li>
-            	<div class="btn-group">
+            	<div class="btn-group" ng-model="assignmentQuestions">
 	            	<button type="button" class="btn btn-primary" ng-repeat="n in assignmentQuestions.pages track by $index"
 		                ng-class="{active : $index+1 == assignmentQuestions.currentPage}" ng-disabled="assignmentQuestions.gateLocked[$index+1]"
 		                ng-click="assignmentQuestions.getPage($index+1)">
