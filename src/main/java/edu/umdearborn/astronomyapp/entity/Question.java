@@ -18,6 +18,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import edu.umdearborn.astronomyapp.util.json.View;
@@ -98,7 +99,7 @@ public class Question extends PageItem {
     this.defaultComment = defaultComment;
   }
 
-  public void setGatekeeper(boolean isGatekeeper) {
+  public void setIsGatekeeper(boolean isGatekeeper) {
     this.isGatekeeper = isGatekeeper;
   }
 
