@@ -28,7 +28,9 @@ import edu.umdearborn.astronomyapp.entity.CourseUser;
 import edu.umdearborn.astronomyapp.entity.GroupMember;
 import edu.umdearborn.astronomyapp.entity.Module;
 import edu.umdearborn.astronomyapp.entity.ModuleGroup;
+import edu.umdearborn.astronomyapp.entity.NumericQuestion;
 import edu.umdearborn.astronomyapp.entity.Question;
+import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
 
 @Service
@@ -249,9 +251,23 @@ public class GroupServiceImpl implements GroupService {
             logger.info("Question: '{}' is a gatekeeper, checking answer: '{}'",
                 e.getQuestion().getId(), e.getId());
             e.setPointesEarned(BigDecimal.ZERO);
-            if (autoGradeService.checkAnswer(e.getId())) {
-              logger.info("Answer: '{}' is correct", e.getId());
-              e.setPointesEarned(e.getQuestion().getPoints());
+            if(QuestionType.NUMERIC.equals(e.getQuestion().getQuestionType())) {
+            	String id = e.getQuestion().getId();
+            	entityManager.clear();
+				NumericQuestion q = entityManager.find(NumericQuestion.class, id);
+				BigDecimal numericPointsEarned = BigDecimal.ZERO;
+				if(autoGradeService.checkNumeric(e, q)) {
+					numericPointsEarned = q.getPoints();
+				}
+				if(autoGradeService.checkUnitAnswer(e.getId())) {
+					numericPointsEarned = numericPointsEarned.add(q.getUnitPoints());
+				}
+				e.setPointesEarned(numericPointsEarned);
+            } else {
+	            if (autoGradeService.checkAnswer(e.getId())) {
+	              logger.info("Answer: '{}' is correct", e.getId());
+	        	  e.setPointesEarned(e.getQuestion().getPoints());
+	            }
             }
             entityManager.merge(e);
           }

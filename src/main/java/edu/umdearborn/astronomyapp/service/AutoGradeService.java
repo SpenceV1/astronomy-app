@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import edu.umdearborn.astronomyapp.entity.Answer;
+import edu.umdearborn.astronomyapp.entity.NumericQuestion;
 import edu.umdearborn.astronomyapp.entity.Question;
 
 public interface AutoGradeService {
@@ -15,6 +16,8 @@ public interface AutoGradeService {
   public boolean answeredGatekeepers(String moduleId, int pageNum, String groupId);
 
   public Answer setPointsEarned(String answerId, BigDecimal points, String... comment);
+  
+  public boolean checkNumeric(Answer answer, NumericQuestion question);
   
   public boolean checkUnitAnswer(String id);
 

@@ -55,7 +55,8 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     logger.debug("Checking answer: {}", answerId);
     if (QuestionType.NUMERIC.equals(answer.getQuestion().getQuestionType())) {
       return checkNumeric(answer,
-          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()));
+          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()))
+    		  && checkUnitAnswer(answerId);
     } else if (QuestionType.MULTIPLE_CHOICE.equals(answer.getQuestion().getQuestionType())) {
       return checkMultipleChoice(answer,
           entityManager.find(MultipleChoiceQuestion.class, answer.getQuestion().getId()));
@@ -85,7 +86,7 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     return false;
   }
 
-  protected boolean checkNumeric(Answer answer, NumericQuestion question) {
+  public boolean checkNumeric(Answer answer, NumericQuestion question) {
     String[] parts = Optional.ofNullable(answer.getValue()).orElse("").split("&");
     if (parts.length != 2) {
       logger.debug("Invalid answer val");
