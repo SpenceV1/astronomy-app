@@ -30,8 +30,7 @@ public class Course extends AbstractGeneratedId {
   private Date closeTimestamp;
 
   @NotNull
-  @Column(updatable = false)
-  @Size(min = 1, max = 6)
+  @Size(min = 1, max = 7)
   private String courseCode;
 
   @NotNull
@@ -43,7 +42,6 @@ public class Course extends AbstractGeneratedId {
   private Date openTimestamp;
 
   @NotNull
-  @Column(updatable = false)
   @Size(min = 1, max = 6)
   private String subjectCode;
 

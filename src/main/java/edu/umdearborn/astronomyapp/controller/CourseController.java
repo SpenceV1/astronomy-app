@@ -117,7 +117,7 @@ public class CourseController {
 			@PathVariable("courseId") String courseId, Principal principal) {
 
 		acl.enforceInCourse(principal.getName(), courseId);
-		acl.enforceCourseNotOpen(courseId);
+		//acl.enforceCourseNotOpen(courseId);
 
 		ValidAssert.isValid(errors);
 		course.setId(courseId);
