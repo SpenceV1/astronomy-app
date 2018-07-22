@@ -126,16 +126,19 @@ Controller.prototype.saveAnswers = function(newPage){
         .then(function(payload){
             self.savedAnswers = payload;
             self.lastSaved = new Date();
+            var isLocked = false;
             for(var i = 0; i < self.questions.length; i++)
         	{
             	var totalPoints = self.questions[i].points;
             	if(self.questions[i].unitPoints != undefined) {
             		totalPoints += self.questions[i].unitPoints;
             	}
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && self.savedAnswers[self.questions[i].id].pointsEarned == totalPoints) {
-        			self.gateLocked[self.currentPage + 1] = false;
+        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && (self.savedAnswers[self.questions[i].id].pointsEarned < totalPoints || self.savedAnswers[self.questions[i].id].pointsEarned == undefined)) {
+        			isLocked = true;
         		}
         	}
+            
+            self.gateLocked[self.currentPage + 1] = isLocked;
     }, function(err){
        self.error = "ERROR saving the answers";
     });
@@ -143,16 +146,19 @@ Controller.prototype.saveAnswers = function(newPage){
     self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
     	.then(function(payload){
         	self.questionGrades = payload;
+            var isLocked = false;
             for(var i = 0; i < self.questions.length; i++)
         	{
             	var totalPoints = self.questions[i].points;
             	if(self.questions[i].unitPoints != undefined) {
             		totalPoints += self.questions[i].unitPoints;
             	}
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && self.savedAnswers[self.questions[i].id].pointsEarned == totalPoints) {
-        			self.gateLocked[self.currentPage + 1] = false;
+        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && (self.savedAnswers[self.questions[i].id].pointsEarned < totalPoints || self.savedAnswers[self.questions[i].id].pointsEarned == undefined)) {
+        			isLocked = true;
         		}
         	}
+            
+            self.gateLocked[self.currentPage + 1] = isLocked;
     }, function(err){
        self.error = "ERROR checking gatekeeper";
     });
