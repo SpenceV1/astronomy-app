@@ -270,7 +270,7 @@ public class GroupServiceImpl implements GroupService {
           if (gatekeeperIds.contains(e.getQuestion().getId())) {
             logger.info("Question: '{}' is a gatekeeper, checking answer: '{}'",
                 e.getQuestion().getId(), e.getId());
-            e.setPointesEarned(BigDecimal.ZERO);
+            //e.setPointesEarned(BigDecimal.ZERO);
             if (autoGradeService.checkAnswer(e.getId())) {
               logger.info("Answer: '{}' is correct", e.getId());
               e.setPointesEarned(e.getQuestion().getPoints());

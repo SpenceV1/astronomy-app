@@ -360,7 +360,7 @@ public class ModuleServiceImpl implements ModuleService {
   public List<Query> getGatekeepers(String moduleId) {
 	  
 	  Query query;
-	  List<String> result = new ArrayList<>();
+	  
 	  /*List<PageItem> result = new ArrayList<>();
 
 	  TypedQuery<Question> questionPageItemQuery = entityManager.createQuery(
@@ -384,7 +384,14 @@ public class ModuleServiceImpl implements ModuleService {
     		  "(page_item.page_id = page.page_id) and " +
     		  "(question.is_gatekeeper = 'true') and (module.module_id = :moduleId)")
       		.setParameter("moduleId", moduleId);
-
+	  		
+	  List<Object[]> result = query.getResultList();
+	  for(Object[] r : result)
+	  {
+		  System.out.println("Gatekeeper list: " + r[0] + " " + r[1]);
+	  }
+	  		
+	  
 	        return query.getResultList();
   }
   
