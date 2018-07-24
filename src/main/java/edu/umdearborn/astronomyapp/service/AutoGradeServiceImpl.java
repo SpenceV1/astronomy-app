@@ -85,7 +85,7 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     return false;
   }
 
-  protected boolean checkNumeric(Answer answer, NumericQuestion question) {
+  public boolean checkNumeric(Answer answer, NumericQuestion question) {
     String[] parts = Optional.ofNullable(answer.getValue()).orElse("").split("&");
     if (parts.length != 2) {
       logger.debug("Invalid answer val");
