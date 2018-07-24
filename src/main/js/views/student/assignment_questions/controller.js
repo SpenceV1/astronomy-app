@@ -126,7 +126,6 @@ Controller.prototype.updateQuestions = function(newPage){
 
 Controller.prototype.checkForGatekeeper = function(questions){
 	var self = this;
-	self.pageHasGatekeeper = false;
 	for(var i = 0; i < questions.length; i++)
 	{
 		if(questions[i].isGatekeeper)
@@ -145,8 +144,6 @@ Controller.prototype.checkForGatekeeper = function(questions){
 		{
 			self.gateLocked[self.currentPage + i] = true;
 		}
-	} else if(!self.viewOnly){
-		self.gateLocked[self.currentPage + 1] = false;
 	}
 	
 	if(!self.pageHasGatekeeper && !self.viewOnly)
@@ -177,39 +174,27 @@ Controller.prototype.saveAnswers = function(newPage){
         .then(function(payload){
             self.savedAnswers = payload;
             self.lastSaved = new Date();
-            var isLocked = false;
-            for(var i = 0; i < self.questions.length; i++)
-        	{
-            	var totalPoints = self.questions[i].points;
-            	if(self.questions[i].unitPoints != undefined) {
-            		totalPoints += self.questions[i].unitPoints;
-            	}
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && (self.savedAnswers[self.questions[i].id].pointsEarned < totalPoints || self.savedAnswers[self.questions[i].id].pointsEarned == undefined)) {
-        			isLocked = true;
-        		}
-        	}
-            
-            self.gateLocked[self.currentPage + 1] = isLocked;
     }, function(err){
        self.error = "ERROR saving the answers";
     });
     
-    self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
-    	.then(function(payload){
-        	self.questionGrades = payload;
-            var isLocked = false;
-            for(var i = 0; i < self.questions.length; i++)
-        	{
-            	var totalPoints = self.questions[i].points;
-            	if(self.questions[i].unitPoints != undefined) {
-            		totalPoints += self.questions[i].unitPoints;
-            	}
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && (self.savedAnswers[self.questions[i].id].pointsEarned < totalPoints || self.savedAnswers[self.questions[i].id].pointsEarned == undefined)) {
-        			isLocked = true;
-        		}
-        	}
-            
-            self.gateLocked[self.currentPage + 1] = isLocked;
+	    self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
+	    	.then(function(payload){
+	        	self.questionGrades = payload;
+	        	
+	        	self._QuestionService.getQuestions(self.courseId, self.moduleId, self.currentPage)
+	            .then(function(payload){
+	                self.data = {};
+	                self.questions = payload;
+	                self.getGatekeepers();
+	                self.checkForGatekeeper(payload);
+	        }, function(err){
+	           self.error = "ERROR getting the questions";
+	        });
+
+        	//self.savedAnswers[self.questions[i].id].pointsEarned > 0 && self.questions[i].isGatekeeper
+        	self.getAnswers(self.currentPage);
+        	self.getShowSaved();
     }, function(err){
        self.error = "ERROR checking gatekeeper";
     });
