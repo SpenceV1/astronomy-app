@@ -252,21 +252,22 @@ public class GroupServiceImpl implements GroupService {
                 e.getQuestion().getId(), e.getId());
             e.setPointesEarned(BigDecimal.ZERO);
             if(QuestionType.NUMERIC.equals(e.getQuestion().getQuestionType())) {
-            		String id = e.getQuestion().getId();
-            		entityManager.clear();
-            		NumericQuestion q = entityManager.find(NumericQuestion.class, id);
-            		BigDecimal numericPointsEarned = BigDecimal.ZERO;
-			if(autoGradeService.checkNumeric(e, q)) {
+
+            	String id = e.getQuestion().getId();
+            	entityManager.clear();
+				NumericQuestion q = entityManager.find(NumericQuestion.class, id);
+				BigDecimal numericPointsEarned = BigDecimal.ZERO;
+				if(autoGradeService.checkNumeric(e, q)) {
 					numericPointsEarned = q.getPoints();
-			}
-			if(autoGradeService.checkUnitAnswer(e.getId())) {
+				}
+				if(autoGradeService.checkUnitAnswer(e.getId())) {
 					numericPointsEarned = numericPointsEarned.add(q.getUnitPoints());
-			}
+				}
 				e.setPointesEarned(numericPointsEarned);
             } else {
 	            if (autoGradeService.checkAnswer(e.getId())) {
-	            	logger.info("Answer: '{}' is correct", e.getId());
-	            	e.setPointesEarned(e.getQuestion().getPoints());
+	              logger.info("Answer: '{}' is correct", e.getId());
+	        	  e.setPointesEarned(e.getQuestion().getPoints());
 	            }
             }
             entityManager.merge(e);

@@ -39,9 +39,7 @@ public class AutoGradeServiceImpl implements AutoGradeService {
         .createQuery(
             "select q from Question q join q.page p join p.module m where m.id = :moduleId and "
                 + "q.questionType in ('NUMERIC', 'MULTIPLE_CHOICE') and q.isGatekeeper = true "
-                + "and (p.order, q.order) in "
-                + "(select p.order, max(q.order) from Question q join q.page p join p.module m where "
-                + "p.order < :pageNum and m.id = :moduleId group by p.order)",
+                + "and p.order < :pageNum and m.id = :moduleId)",
             Question.class)
         .setParameter("moduleId", moduleId).setParameter("pageNum", pageNum).getResultList();
   }
@@ -55,7 +53,8 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     logger.debug("Checking answer: {}", answerId);
     if (QuestionType.NUMERIC.equals(answer.getQuestion().getQuestionType())) {
       return checkNumeric(answer,
-          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()));
+          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()))
+    		  && checkUnitAnswer(answerId);
     } else if (QuestionType.MULTIPLE_CHOICE.equals(answer.getQuestion().getQuestionType())) {
       return checkMultipleChoice(answer,
           entityManager.find(MultipleChoiceQuestion.class, answer.getQuestion().getId()));
