@@ -40,7 +40,9 @@
                 <th>Action</th>
             </tr>
         </thead>
+        <uib-accordion>
         <tbody dnd-list="questionsEditCtrl.questions" dnd-inserted="questionsEditCtrl.reorderQuestion(item.id, index + 1)">
+        <uib-accordian-group heading="Question {{ $index + 1 }}" style="cursor: pointer">
             <tr ng-repeat="question in questionsEditCtrl.questions" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
                 <td> <span class="drag-handle">:::</span></td>
                 <td title="{{question.humanReadableText}}">Question {{ $index + 1 }}</td>
@@ -58,8 +60,10 @@
                 	 <a href=""
                         ng-click="questionsEditCtrl.dropQuestion(question.id)" >Delete</a> </td>
             </tr>
+            </uib-accordian-group>
             <tr class="dndPlaceholder"><td></td><td>Drop Here</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         </tbody>
+        </uib-accordion>
         </table>
     </div>
 </div>

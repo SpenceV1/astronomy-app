@@ -43,6 +43,23 @@ Service.prototype.getQuestions = function(courseId, moduleId, pageNumber){
           });
 };
 
+//Purpose: Get list of gatekeeper questions for whole module
+Service.prototype.getGatekeepers = function(courseId, moduleId){
+    var self = this;
+    var config = self.getConfig();
+
+    var url = {};
+    url[self.userRoles.user] = self._appSettings.API.basePath
+    + '/rest/student/course/'+ courseId +'/module/' + moduleId + '/gatekeepers';
+    url = self.getUrl(url);
+    
+    return this._$http
+          .get(url, config)
+          .then(function (res) {
+            return res.data;
+          });
+};
+
 //Purpose: Add a new question to the assignment
 //Params: courseId - String, moduleId - String, pageNum - string
 Service.prototype.addQuestion = function(courseId, moduleId, pageNum, payload){

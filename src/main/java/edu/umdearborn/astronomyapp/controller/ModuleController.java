@@ -9,9 +9,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Query;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
@@ -42,6 +44,8 @@ import edu.umdearborn.astronomyapp.entity.Question;
 import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
 import edu.umdearborn.astronomyapp.service.AclService;
 import edu.umdearborn.astronomyapp.service.GradeService;
+import edu.umdearborn.astronomyapp.service.AutoGradeService;
+
 import edu.umdearborn.astronomyapp.service.ModuleService;
 import edu.umdearborn.astronomyapp.util.HttpSessionUtil;
 import edu.umdearborn.astronomyapp.util.ValidAssert;
@@ -62,7 +66,9 @@ public class ModuleController {
   private ModuleService moduleService;
   private ObjectMapper  objectMapper;
   private GradeService  gradeService;
-
+  private AutoGradeService autoGradeService;
+  
+  
   public ModuleController(AclService acl, ModuleService moduleService, ObjectMapper objectMapper,
       GradeService gradeService) {
     this.acl = acl;
@@ -115,6 +121,21 @@ public class ModuleController {
     acl.enforceModuleOpen(moduleId);
 
     return moduleService.getPage(moduleId, pageNumber);
+  }
+  
+  @JsonView(View.Student.class)
+  @RequestMapping(value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/gatekeepers",
+      method = GET)
+  public List<Query> getModuleGatekeepers(@PathVariable("courseId") String courseId,
+      @PathVariable("moduleId") String moduleId, 
+      HttpSession session,
+      Principal principal) {
+
+    acl.enforceInCourse(principal.getName(), courseId);
+    acl.enforeceModuleInCourse(courseId, moduleId);
+    acl.enforceModuleOpen(moduleId);
+
+    return moduleService.getGatekeepers(moduleId);
   }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module", method = POST)

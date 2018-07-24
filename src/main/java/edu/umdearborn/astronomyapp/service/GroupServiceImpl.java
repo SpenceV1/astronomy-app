@@ -252,6 +252,7 @@ public class GroupServiceImpl implements GroupService {
                 e.getQuestion().getId(), e.getId());
             e.setPointesEarned(BigDecimal.ZERO);
             if(QuestionType.NUMERIC.equals(e.getQuestion().getQuestionType())) {
+
             	String id = e.getQuestion().getId();
             	entityManager.clear();
 				NumericQuestion q = entityManager.find(NumericQuestion.class, id);
