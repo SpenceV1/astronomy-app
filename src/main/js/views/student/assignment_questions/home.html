@@ -61,10 +61,10 @@
     </div>
     <nav aria-label="Page navigation" class="questionsPaging">
           <ul class="pagination">
-            <li ng-if="assignmentQuestions.grading" ng-click="assignmentQuestions.savePoints()">
-               <a aria-label="Save Grades">
-                    Save Grades
-                </a>
+          	<li>
+	            <button type="button" class="btn btn-default" ng-if="assignmentQuestions.grading" ng-click="assignmentQuestions.savePoints()">
+	                   Save Grades
+	            </button>
             </li>
             <li>
             	<button type="button" class="btn btn-default" ng-if="assignmentQuestions.editable" ng-click="assignmentQuestions.saveAnswers()">
@@ -91,7 +91,12 @@
             <li>
             	<button type="button" class="btn btn-default" ng-if="assignmentQuestions.editable" ng-click="assignmentQuestions.submit()">
             		Submit
-            	</button>	
+            	</button>
+            </li>
+            <li>
+	            <button type="button" class="btn btn-default" ng-if="assignmentQuestions.grading" ng-click="assignmentQuestions.doneGrading()">
+                    Done Grading
+	            </button>
             </li>
         </ul>
     </nav>

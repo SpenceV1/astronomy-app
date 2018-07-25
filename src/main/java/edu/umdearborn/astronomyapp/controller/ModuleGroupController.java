@@ -101,7 +101,7 @@ public class ModuleGroupController {
     acl.enforceInGroup(courseUserId, groupId);
     acl.enforeModuleNotClosed(moduleId);
 
-    return groupService.removeFromGroup(groupId, removedUser);
+    return groupService.removeFromGroup(groupId, courseUserId, removedUser);
   }
 
   @RequestMapping(value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/free", method = GET)

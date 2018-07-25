@@ -1,7 +1,7 @@
 <h2>{{ assignmentLogin.pageName }}</h2>
 <form ng-submit="assignmentLogin.groupCheckin()">
     <div class="help-block">
-        For each member of the group, please submit your username and password.<br>
+        For each member of the group (Besides the person logged in already), please submit your username and password.<br>
         Order does not matter
     </div>
     <div class="panel panel-default" ng-repeat="n in [].constructor(assignmentLogin.groupMembersCount) track by $index">

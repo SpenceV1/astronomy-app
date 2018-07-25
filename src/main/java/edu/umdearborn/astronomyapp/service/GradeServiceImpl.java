@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.ImmutableMap;
 
+import edu.umdearborn.astronomyapp.entity.AstroAppUser;
 import edu.umdearborn.astronomyapp.entity.Module;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
 
@@ -52,7 +53,8 @@ public class GradeServiceImpl implements GradeService {
     List<String> csvHeaderOrder = modules.keySet().parallelStream().collect(Collectors.toList());
     List<String> csvHeader = csvHeaderOrder.stream().map(e -> modules.get(e).getModuleTitle())
         .collect(Collectors.toList());
-    csvHeader.add(0, "email");
+    csvHeader.add(0, "Last, First");
+    csvHeader.add(1, "Email");
     String[] csvHeaderArr = new String[csvHeader.size()];
 
     Writer writer = new OutputStreamWriter(outputStream);
@@ -60,10 +62,11 @@ public class GradeServiceImpl implements GradeService {
     try (CSVPrinter printer =
         new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(csvHeader.toArray(csvHeaderArr)))) {
       List<Iterable> records = new ArrayList<>();
-      getUserEmails(courseId).forEach(e -> {
+      getUsers(courseId).forEach(e -> {
         List<Object> record = new ArrayList<>();
-        record.add(e);
-        Map<String, Object> studentGrades = viewStudentGrades(e, courseId);
+        record.add(e.getLastName() + ", " + e.getFirstName());
+        record.add(e.getEmail());
+        Map<String, Object> studentGrades = viewStudentGrades(e.getEmail(), courseId);
         csvHeaderOrder.stream().forEachOrdered(f -> {
           logger.info("Adding points for {} in module: '{}'", e, f);
           record.add(((Map<String, Object>) studentGrades.get(f)).get("pointsEarned"));
@@ -133,6 +136,17 @@ public class GradeServiceImpl implements GradeService {
             String.class)
         .setParameter("courseId", courseId).getResultList()).orElse(new ArrayList<String>());
   }
+  
+  private List<AstroAppUser> getUsers(String courseId) {
+	    
+	  List<AstroAppUser> users = entityManager
+        .createQuery(
+            "select u from CourseUser cu join cu.user u join cu.course c where c.id = :courseId "
+                + "and cu.role = 'STUDENT'",
+                AstroAppUser.class)
+        .setParameter("courseId", courseId).getResultList();
+	  return users;
+  }
 
   @Override
   public Map<String, Object> getGrade(String email, String moduleId) {
@@ -150,7 +164,7 @@ public class GradeServiceImpl implements GradeService {
           "select coalesce(max(a.submissionNumber), 0) from Answer a join a.group g where g.id = :groupId",
           Long.class).setParameter("groupId", results.get(0)).getSingleResult();
 
-      if (submissionNumber > 0L) {
+      //if (submissionNumber > 0L) {
 
         logger.debug("Getting points for user: '{}' for module: '{}'", email, moduleId);
         BigDecimal points = entityManager
@@ -185,7 +199,7 @@ public class GradeServiceImpl implements GradeService {
 
         return ImmutableMap.of("pointsEarned", points, "submissionTimestamp", submissionTimestamp,
             "submissionNumber", submissionNumber, "finishedGrading", finishedGrading);
-      }
+      //}
 
     }
     logger.debug("User: '{}' has no grade for module: '{}'", email, moduleId);

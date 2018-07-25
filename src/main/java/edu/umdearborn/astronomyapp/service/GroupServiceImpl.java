@@ -230,6 +230,8 @@ public class GroupServiceImpl implements GroupService {
         Map<String, String> ans = answers.get(e.getQuestion().getId());
 
         if (ans != null && ans.containsKey("answer")) {
+    	  Date date = new Date();
+    	  e.setSubmissionTimestamp(date);
           logger.debug("Saving answer: '{}'", e.getQuestion().getId());
           if (ans.containsKey("unit")) {
             e.setValue(new StringBuilder("#").append(ans.get("answer")).append("&")
@@ -326,19 +328,23 @@ public class GroupServiceImpl implements GroupService {
         "select a from Answer a join a.group g join g.module m where g.id = :groupId and "
             + "a.submissionNumber = :submissionNumber");
 
+    /*
     if (!getSavedAnswers) {
       logger.debug("Appending saved answers querery for groupId: '{}'", groupId);
       jpql.append(" and a.submissionTimestamp is not null");
     }
+    */
 
     TypedQuery<Answer> query = entityManager.createQuery(jpql.toString(), Answer.class);
     query.setParameter("groupId", groupId);
 
-    if (getSavedAnswers) {
+    //if (getSavedAnswers) {
       query.setParameter("submissionNumber", 0L);
+    /*
     } else {
       query.setParameter("submissionNumber", submissionNumber(groupId));
     }
+    */
 
     return query.getResultList();
   }
@@ -360,11 +366,12 @@ public class GroupServiceImpl implements GroupService {
     if (ResultListUtil.hasResult(questionResult)) {
       logger.debug("Creating answers...");
 
-      
+      Date date = new Date();
       questionResult.stream().map(q -> {
         Answer answer = new Answer();
         answer.setGroup(group);
         answer.setQuestion(q);
+        answer.setSubmissionTimestamp(date);
         return answer;
       }).forEach(entity -> {
         logger.debug("Persisting: {}", entity);
@@ -400,28 +407,39 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public List<CourseUser> removeFromGroup(String groupId, String courseUserId) {
+  public List<CourseUser> removeFromGroup(String groupId, String courseUserId, String removeUserId) {
     logger.debug("Deleting group member in group: '{}' with course user id: '{}'", groupId,
-        courseUserId);
-    entityManager
+        removeUserId);
+    
+    if(courseUserId.equals(removeUserId))
+    {
+    	TypedQuery<Boolean> isMoreThanOneMember = entityManager.createQuery(
+	        "select count(m) > 1 from GroupMember m join m.moduleGroup g where g.id = :groupId",
+	        Boolean.class).setParameter("groupId", groupId);
+	    boolean hasMultiplePeople = isMoreThanOneMember.getSingleResult();
+	    
+	    if(!hasMultiplePeople) {
+	    	entityManager
+	        .createQuery(
+	            "delete from GroupMember m where m.id in (select sm.id from GroupMember sm join "
+	                + " sm.moduleGroup g join sm.courseUser u where g.id = :groupId and "
+	                + "u.id = :courseUserId)")
+	        .setParameter("groupId", groupId).setParameter("courseUserId", removeUserId)
+	        .executeUpdate();
+	    	
+	    	logger.debug("Removing group instance for group: '{}'", groupId);
+	        entityManager.createQuery("delete from ModuleGroup g where g.id = :groupId")
+	            .setParameter("groupId", groupId).executeUpdate();
+	        return null;
+	    }
+    } else {
+    	entityManager
         .createQuery(
             "delete from GroupMember m where m.id in (select sm.id from GroupMember sm join "
                 + " sm.moduleGroup g join sm.courseUser u where g.id = :groupId and "
                 + "u.id = :courseUserId)")
-        .setParameter("groupId", groupId).setParameter("courseUserId", courseUserId)
+        .setParameter("groupId", groupId).setParameter("courseUserId", removeUserId)
         .executeUpdate();
-
-    TypedQuery<Boolean> isGroupEmptyQuery = entityManager.createQuery(
-        "select count(m) = 0 from GroupMember m join m.moduleGroup g where g.id = :groupId",
-        Boolean.class).setParameter("groupId", groupId);
-    boolean isGroupEmpty = isGroupEmptyQuery.getSingleResult();
-
-    if (isGroupEmpty) {
-      logger.debug("Removing group instance for group: '{}'", groupId);
-      entityManager.createQuery("delete from ModuleGroup g where g.id = :groupId")
-          .setParameter("groupId", groupId).executeUpdate();
-
-      return null;
     }
 
     return getUsersInGroup(groupId);

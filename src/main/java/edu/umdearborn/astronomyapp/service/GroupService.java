@@ -33,7 +33,7 @@ public interface GroupService {
 
   public List<Answer> submitAnswers(String groupId);
 
-  public List<CourseUser> removeFromGroup(String groupId, String courseUserId);
+  public List<CourseUser> removeFromGroup(String groupId, String courseUserId, String removeUserId);
 
   public List<CourseUser> getFreeUsers(String courseId, String moduleId);
 

@@ -59,6 +59,9 @@ Controller.prototype.removeGroupMember = function(memberToBeRemovedId){
         .then(function(payload){
             self.groupMembers = payload;
             self.getAssignmentMembers();
+            if(payload.trim() == "") {
+            	self._$state.go('app.course.assignment', {moduleId:self.moduleId}, { reload:true });
+            }
     }, function(err){
        self.error = "ERROR removing a group member";
     });

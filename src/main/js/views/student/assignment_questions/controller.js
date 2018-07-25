@@ -191,39 +191,11 @@ Controller.prototype.saveAnswers = function(newPage){
     }, function(err){
        self.error = "ERROR saving the answers";
     });
-    
-    self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
-    	.then(function(payload){
-        	self.questionGrades = payload;
-            for(var i = 0; i < self.questions.length; i++)
-        	{
-            	var totalPoints = self.questions[i].points;
-            	if(self.questions[i].unitPoints != undefined) {
-            		totalPoints += self.questions[i].unitPoints;
-            	}
-            	var correct = false;
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && self.savedAnswers[self.questions[i].id].pointsEarned == totalPoints) {
-        			correct = true;
-        		} else {
-        			correct = false;
-        		}
-        		
-        		var question = self.gatekeepers.find(function(element) {
-        			  return element.id == self.questions[i].id;
-        			});
-        		if(question != undefined) {
-        			question.correct = correct;
-	        		self.temp.push(question.id + ": " + question.correct);
-        		}
-        	}
-            self.updateGatekeeperLocks();
-    }, function(err){
-       self.error = "ERROR checking gatekeeper";
-    });
 };
 
 Controller.prototype.savePoints = function(){
     var self = this;
+    self.lastSaved = "Saving...";
     self._QuestionService.savePoints(self.courseId, self.moduleId, self.groupId, self.questionGrades)
         .then(function(payload){
             self.savedAnswers = payload;
@@ -245,6 +217,19 @@ Controller.prototype.getAnswers = function(newPage){
     });
 };
 
+Controller.prototype.doneGrading = function() {
+    var self = this;
+    self.lastSaved = "Saving...";
+    self._QuestionService.savePoints(self.courseId, self.moduleId, self.groupId, self.questionGrades)
+        .then(function(payload){
+            self.savedAnswers = payload;
+            self.lastSaved = new Date();
+            self._$state.go('app.course.assignment.groups', { moduleId: self.moduleId }, { reload:true });
+    }, function(err){
+       self.error = "ERROR saving points";
+    });
+};
+
 Controller.prototype.submit = function(){
     var self = this;
     var confirmation = "Are you sure you want to submit?";
@@ -252,12 +237,22 @@ Controller.prototype.submit = function(){
     var modalInstance = self._ConfirmationService.open("", confirmation, footNote);
     self.saveAnswers(self.currentPage);
     modalInstance.result.then(function(){
+	    	self._QuestionService.saveAnswers(self.courseId, self.moduleId, self.groupId, self.data)
+	        .then(function(payload){
+	            self.savedAnswers = payload;
+	            self.lastSaved = new Date();
+	            self._$state.go('app.course.assignment', { moduleId: self.moduleId }, { reload:true });
+	    }, function(err){
+	       self.error = "ERROR submitting the assignment";
+	    });
+    	/*
         self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
             .then(function(payload){
                 self._$state.go('app.course.assignment', { moduleId: self.moduleId }, { reload:true });
         }, function(err){
            self.error = "ERROR submitting the assignment";
         });
+        */
     }, function(){
         console.log("They said no");
     });
