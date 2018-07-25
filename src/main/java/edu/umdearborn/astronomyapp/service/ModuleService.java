@@ -24,7 +24,7 @@ public interface ModuleService {
 
   public List<PageItem> getPage(String moduleId, int pageNumber);
   
-  public List<Query> getGatekeepers(String moduleId);
+  public List<Query> getGatekeepers(String moduleId, String groupId);
   
   public void reorderPageItem(String itemId, int newOrder);
 

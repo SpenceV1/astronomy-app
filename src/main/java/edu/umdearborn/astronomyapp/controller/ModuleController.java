@@ -124,10 +124,10 @@ public class ModuleController {
   }
   
   @JsonView(View.Student.class)
-  @RequestMapping(value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/gatekeepers",
+  @RequestMapping(value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}/gatekeepers",
       method = GET)
   public List<Query> getModuleGatekeepers(@PathVariable("courseId") String courseId,
-      @PathVariable("moduleId") String moduleId, 
+      @PathVariable("moduleId") String moduleId, @PathVariable("groupId") String groupId,
       HttpSession session,
       Principal principal) {
 
@@ -135,7 +135,7 @@ public class ModuleController {
     acl.enforeceModuleInCourse(courseId, moduleId);
     acl.enforceModuleOpen(moduleId);
 
-    return moduleService.getGatekeepers(moduleId);
+    return moduleService.getGatekeepers(moduleId, groupId);
   }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module", method = POST)

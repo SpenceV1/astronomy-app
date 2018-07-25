@@ -40,6 +40,7 @@ import edu.umdearborn.astronomyapp.entity.PageItem.PageItemType;
 import edu.umdearborn.astronomyapp.entity.Question;
 import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
 import edu.umdearborn.astronomyapp.entity.UnitOption;
+import edu.umdearborn.astronomyapp.service.AutoGradeService;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
 import edu.umdearborn.astronomyapp.util.json.JsonDecorator;
 
@@ -50,9 +51,11 @@ public class ModuleServiceImpl implements ModuleService {
   private static final Logger logger = LoggerFactory.getLogger(ModuleServiceImpl.class);
 
   private EntityManager entityManager;
+  private AutoGradeService autoGradeService;
 
-  public ModuleServiceImpl(EntityManager entityManager) {
+  public ModuleServiceImpl(EntityManager entityManager, AutoGradeService autoGradeService) {
     this.entityManager = entityManager;
+    this.autoGradeService = autoGradeService;
   }
 
   @Override
@@ -355,12 +358,12 @@ public class ModuleServiceImpl implements ModuleService {
   }
   
   ///////////////////Debug getGatekeeper
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({ "unchecked", "null" })
 @Override
-  public List<Query> getGatekeepers(String moduleId) {
+  public List<Query> getGatekeepers(String moduleId, String groupId) {
 	  
 	  Query query;
-	  
+	  String gateKeeperAnswerId;
 	  /*List<PageItem> result = new ArrayList<>();
 
 	  TypedQuery<Question> questionPageItemQuery = entityManager.createQuery(
@@ -379,20 +382,40 @@ public class ModuleServiceImpl implements ModuleService {
 	  
 	  query = entityManager
       .createNativeQuery(
-    		  "SELECT page_order, question_id FROM page_item, question, page, module " +
+    		  "SELECT page_order, question_id FROM page_item, question, page " +
     		  "WHERE (page_item.page_item_id = question.question_id) and " + 
-    		  "(page_item.page_id = page.page_id) and " +
-    		  "(question.is_gatekeeper = 'true') and (module.module_id = :moduleId)")
+    		  "(page.page_id = page_item.page_id) and " +
+    		  "(question.is_gatekeeper = 'true') and (page.module_id = :moduleId)")
       		.setParameter("moduleId", moduleId);
 	  		
 	  List<Object[]> result = query.getResultList();
+
+	  List<String> updatedGateKeepers = new ArrayList<String>();
+
 	  for(Object[] r : result)
 	  {
-		  System.out.println("Gatekeeper list: " + r[0] + " " + r[1]);
+		  Query q = entityManager
+			      .createNativeQuery(
+			    		  "SELECT answer_id FROM answer " +
+			    		  "WHERE (question_id = :questionId) and submission_number = "
+			    		  + "(SELECT max(submission_number) " + 
+			    		  "FROM " +
+			    		  "answer "
+			    		  + "WHERE question_id = :questionId and module_group_id = :groupId)")
+			      		.setParameter("questionId", r[1]).setParameter("groupId", groupId);
+		  List<String> answerId = q.getResultList();
+		  gateKeeperAnswerId = answerId.get(0).toString();
+
+		  if(autoGradeService.checkAnswer(gateKeeperAnswerId))
+		  {
+			  System.out.println("answer" +"correct");
+			  updatedGateKeepers.add(r[0].toString());
+			  System.out.println("page " + r[0].toString());
+		  }
 	  }
-	  		
-	  
+
 	        return query.getResultList();
+	        //return updatedGateKeepers;
   }
   
   @Override

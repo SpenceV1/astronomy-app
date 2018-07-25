@@ -44,13 +44,16 @@ Service.prototype.getQuestions = function(courseId, moduleId, pageNumber){
 };
 
 //Purpose: Get list of gatekeeper questions for whole module
-Service.prototype.getGatekeepers = function(courseId, moduleId){
+Service.prototype.getGatekeepers = function(courseId, moduleId, groupId){
     var self = this;
     var config = self.getConfig();
 
     var url = {};
     url[self.userRoles.user] = self._appSettings.API.basePath
-    + '/rest/student/course/'+ courseId +'/module/' + moduleId + '/gatekeepers';
+    + '/rest/student/course/'+ courseId +'/module/'
+    + moduleId + '/group/'
+    + groupId +
+    '/gatekeepers';
     url = self.getUrl(url);
     
     return this._$http

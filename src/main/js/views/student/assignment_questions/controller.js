@@ -102,7 +102,7 @@ Controller.prototype.getQuestions = function(newPage){
 
 Controller.prototype.getGatekeepers = function(){
     var self = this;
-    self._QuestionService.getGatekeepers(self.courseId, self.moduleId)
+    self._QuestionService.getGatekeepers(self.courseId, self.moduleId, self.groupId)
         .then(function(payload){
             self.data = {};
             self.gateKeepers = payload;
