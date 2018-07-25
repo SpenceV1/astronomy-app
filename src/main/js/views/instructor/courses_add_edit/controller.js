@@ -26,12 +26,14 @@ Controller.prototype.addCourse= function(valid, course) {
     if(valid){
     	if(!self.course.id){
 	        self.error = null;
+	        self.success = "Creating course, Please wait...";
 	        self._CourseService.addCourse(course)
 	            .then(function(payload){
 	            	self._$state.go('app.courses', { success : "Course Successfully Created!" });
 	            	
 	        }, function(err){
 	        	self.error = "ERROR creating the course";
+	        	self.success = null;
 	        });
     	} else {
 	        self.error = null;

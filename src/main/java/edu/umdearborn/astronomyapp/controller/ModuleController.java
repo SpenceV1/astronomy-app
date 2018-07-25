@@ -126,7 +126,7 @@ public class ModuleController {
   @JsonView(View.Student.class)
   @RequestMapping(value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}/gatekeepers",
       method = GET)
-  public List<Query> getModuleGatekeepers(@PathVariable("courseId") String courseId,
+  public List<Object[]> getModuleGatekeepers(@PathVariable("courseId") String courseId,
       @PathVariable("moduleId") String moduleId, @PathVariable("groupId") String groupId,
       HttpSession session,
       Principal principal) {

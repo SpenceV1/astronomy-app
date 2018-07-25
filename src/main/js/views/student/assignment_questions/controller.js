@@ -27,7 +27,7 @@ function Controller($scope, $state, $stateParams, AssignmentService, QuestionSer
     this._QuestionService = QuestionService;
     this._ConfirmationService = ConfirmationService;
     this.gateLocked = [];
-    this.pageHasGatekeeper = false;
+    this.temp = [];
     this.init();
 };
 
@@ -40,9 +40,12 @@ Controller.prototype.init = function(){
            self.pages = new Array(self.maxPage);
        }
     });
+    
     self.getShowSaved();
     self.getQuestions(self.currentPage);
-    self.getGatekeepers();
+    if(!self.viewOnly) {
+    	self.getGatekeepers();
+    }
 };
 
 Controller.prototype.getLock = function(page){
@@ -62,8 +65,8 @@ Controller.prototype.getLock = function(page){
                 }
         }, function(err){
             self.editable = false;
-            self.error = "ERROR getting the lock"
-        })
+            self.error = "ERROR getting the lock";
+        });
     }
 };
 
@@ -94,7 +97,8 @@ Controller.prototype.getQuestions = function(newPage){
             self.currentPage = newPage;
             self.lastSaved = "Not Saved";
             self.getLock(newPage);
-            self.checkForGatekeeper(payload);
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
     }, function(err){
        self.error = "ERROR getting the questions";
     });
@@ -105,9 +109,21 @@ Controller.prototype.getGatekeepers = function(){
     self._QuestionService.getGatekeepers(self.courseId, self.moduleId, self.groupId)
         .then(function(payload){
             self.data = {};
-            self.gateKeepers = payload;
+            var gatekeepers = [];
+            for(var i = 0; i < payload.length; i++) {
+            	var pageNum = payload[i][0];
+                var questionId = payload[i][1];
+    	    	var isCorrect = payload[i][2];
+            	gatekeepers[i] = {
+            			id: questionId,
+            			page: pageNum,
+            			correct: isCorrect
+            	};
+            }
+            self.gatekeepers = gatekeepers;
+            self.updateGatekeeperLocks();
     }, function(err){
-       self.error = "ERROR getting the questions";
+       self.error = "ERROR getting GateKeepers";
     });
 };
 
@@ -118,78 +134,60 @@ Controller.prototype.updateQuestions = function(newPage){
             self.data = {};
             self.questions = payload;
             self.currentPage = newPage;
-            self.checkForGatekeeper(payload);
     }, function(err){
        self.error = "ERROR getting the questions";
     });
 };
 
-Controller.prototype.checkForGatekeeper = function(questions){
+Controller.prototype.updateGatekeeperLocks = function() {
 	var self = this;
-	self.pageHasGatekeeper = false;
-	for(var i = 0; i < questions.length; i++)
+    for(var i = 0; i < self.maxPage; i++)
 	{
-		if(questions[i].isGatekeeper)
-		{
-			self.pageHasGatekeeper = true;
-		}
-		else
-		{	
-			self.pageHasGatekeeper = false;
-		}
+		self.gateLocked[i] = false;
 	}
-	/*
-	if(self.pageHasGatekeeper && !self.viewOnly)
+	if(self.gatekeepers.length > 0 && !self.viewOnly)
 	{
-		for(var i = 1; i < self.maxPage; i++)
-		{
-			self.gateLocked[self.currentPage + i] = true;
-		}
-	} else if(!self.viewOnly){
-		self.gateLocked[self.currentPage + 1] = false;
+		var gatekeepers = self.gatekeepers;
+	    for(var i = 0; i < gatekeepers.length; i++) {
+	    	if(!gatekeepers[i].correct) {
+	    		for(var k = gatekeepers[i].page; k < self.maxPage; k++)
+    			{
+		    		self.gateLocked[k] = true;
+    			}
+	    	}
+	    }
 	}
-	
-	if(!self.pageHasGatekeeper && !self.viewOnly)
-		self.gateLocked[self.currentPage + 1] = false;
-	*/
-	
-	if(self.gateKeepers.length > 0 && !self.viewOnly)
-	{
-		for(var i = 1; i <= self.maxPage - self.currentPage; i++)
-		{
-			if(self.gateKeepers[0][0] < self.currentPage + i)
-				self.gateLocked[self.currentPage + i] = true;
-		}
-	}
-	else
-		{
-			for(var i = 1; i <= self.maxPage - self.currentPage; i++)
-			{
-					self.gateLocked[self.currentPage + i] = false;
-			}
-		}
-	
 };
 
 Controller.prototype.saveAnswers = function(newPage){
     var self = this;
+    self.lastSaved = "Saving...";
     self._QuestionService.saveAnswers(self.courseId, self.moduleId, self.groupId, self.data)
         .then(function(payload){
             self.savedAnswers = payload;
             self.lastSaved = new Date();
-            var isLocked = false;
             for(var i = 0; i < self.questions.length; i++)
         	{
             	var totalPoints = self.questions[i].points;
             	if(self.questions[i].unitPoints != undefined) {
             		totalPoints += self.questions[i].unitPoints;
             	}
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && (self.savedAnswers[self.questions[i].id].pointsEarned < totalPoints || self.savedAnswers[self.questions[i].id].pointsEarned == undefined)) {
-        			isLocked = true;
+            	var correct = false;
+        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && self.savedAnswers[self.questions[i].id].pointsEarned == totalPoints) {
+        			correct = true;
+        		} else {
+        			correct = false;
+        		}
+        		
+        		var question = self.gatekeepers.find(function(element) {
+        			  return element.id == self.questions[i].id;
+        			});
+        		if(question != undefined) {
+        			question.correct = correct;
+	        		self.temp.push(question.id + ": " + question.correct);
         		}
         	}
-            
-            self.gateLocked[self.currentPage + 1] = isLocked;
+            self.updateGatekeeperLocks();
     }, function(err){
        self.error = "ERROR saving the answers";
     });
@@ -197,19 +195,28 @@ Controller.prototype.saveAnswers = function(newPage){
     self._AssignmentService.submitAssignmentAnswers(self.courseId, self.moduleId, self.groupId)
     	.then(function(payload){
         	self.questionGrades = payload;
-            var isLocked = false;
             for(var i = 0; i < self.questions.length; i++)
         	{
             	var totalPoints = self.questions[i].points;
             	if(self.questions[i].unitPoints != undefined) {
             		totalPoints += self.questions[i].unitPoints;
             	}
-        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && (self.savedAnswers[self.questions[i].id].pointsEarned < totalPoints || self.savedAnswers[self.questions[i].id].pointsEarned == undefined)) {
-        			isLocked = true;
+            	var correct = false;
+        		if(self.questions[i].isGatekeeper && self.savedAnswers[self.questions[i].id] != undefined && self.savedAnswers[self.questions[i].id].pointsEarned == totalPoints) {
+        			correct = true;
+        		} else {
+        			correct = false;
+        		}
+        		
+        		var question = self.gatekeepers.find(function(element) {
+        			  return element.id == self.questions[i].id;
+        			});
+        		if(question != undefined) {
+        			question.correct = correct;
+	        		self.temp.push(question.id + ": " + question.correct);
         		}
         	}
-            
-            self.gateLocked[self.currentPage + 1] = isLocked;
+            self.updateGatekeeperLocks();
     }, function(err){
        self.error = "ERROR checking gatekeeper";
     });

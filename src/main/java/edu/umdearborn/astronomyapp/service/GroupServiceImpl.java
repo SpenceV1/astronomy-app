@@ -248,7 +248,7 @@ public class GroupServiceImpl implements GroupService {
           }
 
           if (gatekeeperIds.contains(e.getQuestion().getId())) {
-            logger.info("Question: '{}' is a gatekeeper, checking answer: '{}'",
+            logger.debug("Question: '{}' is a gatekeeper, checking answer: '{}'",
                 e.getQuestion().getId(), e.getId());
             e.setPointesEarned(BigDecimal.ZERO);
             if(QuestionType.NUMERIC.equals(e.getQuestion().getQuestionType())) {
@@ -266,7 +266,7 @@ public class GroupServiceImpl implements GroupService {
 				e.setPointesEarned(numericPointsEarned);
             } else {
 	            if (autoGradeService.checkAnswer(e.getId())) {
-	              logger.info("Answer: '{}' is correct", e.getId());
+	              logger.debug("Answer: '{}' is correct", e.getId());
 	        	  e.setPointesEarned(e.getQuestion().getPoints());
 	            }
             }

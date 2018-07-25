@@ -357,32 +357,16 @@ public class ModuleServiceImpl implements ModuleService {
     return result;
   }
   
-  ///////////////////Debug getGatekeeper
-  @SuppressWarnings({ "unchecked", "null" })
+  @SuppressWarnings({ "unchecked" })
 @Override
-  public List<Query> getGatekeepers(String moduleId, String groupId) {
+  public List<Object[]> getGatekeepers(String moduleId, String groupId) {
 	  
 	  Query query;
 	  String gateKeeperAnswerId;
-	  /*List<PageItem> result = new ArrayList<>();
-
-	  TypedQuery<Question> questionPageItemQuery = entityManager.createQuery(
-	        "select q from Question q join q.page p join p.module m where m.id = :moduleId"
-	            + "q.pageItemType = :questionType and q.isGatekeeper = true", Question.class);
-	  
-	  questionPageItemQuery.setParameter("moduleId", moduleId).setParameter("questionType", QUESTION);
-	  
-	  List<Question> questionResult = questionPageItemQuery.getResultList();
-	    
-	  result = result.stream().sorted(Comparator.comparing(PageItem::getOrder)).collect(Collectors.toList());
-	  
-	    if (ResultListUtil.hasResult(questionResult)) {
-	        result.addAll(questionResult);
-	      }*/
 	  
 	  query = entityManager
       .createNativeQuery(
-    		  "SELECT page_order, question_id FROM page_item, question, page " +
+    		  "SELECT page_order, question_id, question.is_gatekeeper FROM page_item, question, page " +
     		  "WHERE (page_item.page_item_id = question.question_id) and " + 
     		  "(page.page_id = page_item.page_id) and " +
     		  "(question.is_gatekeeper = 'true') and (page.module_id = :moduleId)")
@@ -390,31 +374,26 @@ public class ModuleServiceImpl implements ModuleService {
 	  		
 	  List<Object[]> result = query.getResultList();
 
-	  List<String> updatedGateKeepers = new ArrayList<String>();
-
 	  for(Object[] r : result)
 	  {
 		  Query q = entityManager
 			      .createNativeQuery(
 			    		  "SELECT answer_id FROM answer " +
-			    		  "WHERE (question_id = :questionId) and submission_number = "
-			    		  + "(SELECT max(submission_number) " + 
-			    		  "FROM " +
-			    		  "answer "
-			    		  + "WHERE question_id = :questionId and module_group_id = :groupId)")
+			    		  "WHERE question_id = :questionId and submission_number = 0 " +
+			    		  "and module_group_id = :groupId")
 			      		.setParameter("questionId", r[1]).setParameter("groupId", groupId);
 		  List<String> answerId = q.getResultList();
 		  gateKeeperAnswerId = answerId.get(0).toString();
 
 		  if(autoGradeService.checkAnswer(gateKeeperAnswerId))
 		  {
-			  System.out.println("answer" +"correct");
-			  updatedGateKeepers.add(r[0].toString());
-			  System.out.println("page " + r[0].toString());
+			  result.get(result.indexOf(r))[2] = true;
+		  } else {
+			  result.get(result.indexOf(r))[2] = false;
 		  }
 	  }
 
-	        return query.getResultList();
+	        return result;
 	        //return updatedGateKeepers;
   }
   
