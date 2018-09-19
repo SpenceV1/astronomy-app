@@ -52,9 +52,9 @@ public class AutoGradeServiceImpl implements AutoGradeService {
                            // correct type
     logger.debug("Checking answer: {}", answerId);
     if (QuestionType.NUMERIC.equals(answer.getQuestion().getQuestionType())) {
+      //only returns whether the numeric value is correct, ignores units (check separately)
       return checkNumeric(answer,
-          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()))
-    		  && checkUnitAnswer(answerId);
+          entityManager.find(NumericQuestion.class, answer.getQuestion().getId()));
     } else if (QuestionType.MULTIPLE_CHOICE.equals(answer.getQuestion().getQuestionType())) {
       return checkMultipleChoice(answer,
           entityManager.find(MultipleChoiceQuestion.class, answer.getQuestion().getId()));
@@ -79,6 +79,8 @@ public class AutoGradeServiceImpl implements AutoGradeService {
     	if(correctUnit.getId().equals(answer.getValue().split("&")[1])) {
     		return true;
     	}
+    } else {
+    	return true;
     }
 
     return false;
@@ -86,11 +88,19 @@ public class AutoGradeServiceImpl implements AutoGradeService {
 
   public boolean checkNumeric(Answer answer, NumericQuestion question) {
     String[] parts = Optional.ofNullable(answer.getValue()).orElse("").split("&");
-    if (parts.length != 2) {
-      logger.debug("Invalid answer val");
-      return false;
+    BigDecimal numberAnswer = BigDecimal.ZERO;
+    try {
+	    if (parts.length != 2) {
+	    	//No unit assumed
+	    	numberAnswer = new BigDecimal(parts[0]);
+	    } else {
+	    	//Unit assumed
+	    	numberAnswer = new BigDecimal(parts[0].substring(1));
+	    }
     }
-    BigDecimal numberAnswer = new BigDecimal(parts[0].substring(1));
+	catch (NumberFormatException ex) {
+		return false;
+	}
     BigDecimal upperLimit = question.getCorrectCoefficient()
         .add(question.getAllowedCoefficientSpread()).movePointRight(question.getCorrectExponenet());
     BigDecimal lowerLimit =

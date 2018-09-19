@@ -463,7 +463,7 @@ public class ModuleGroupController {
           if (QuestionType.NUMERIC.equals(a.getQuestion().getQuestionType())) {
         	  if(autoGradeService.checkUnitAnswer(a.getId())) {
         		  BigDecimal unitPoints = autoGradeService.getNumericUnitPoints(a.getQuestion().getId());
-        		  if(points.compareTo(BigDecimal.ZERO) == 0) {
+        		  if(points.compareTo(BigDecimal.ZERO) == 0 && unitPoints.compareTo(BigDecimal.ZERO) == 1) {
         			  comment = unitPoints.stripTrailingZeros().toPlainString() + " points earned for correct unit.";
         		  }
         		  points = points.add(unitPoints);
