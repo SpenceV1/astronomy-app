@@ -1,5 +1,5 @@
 
-function Controller($scope, $state, $stateParams, $q, AssignmentService, GroupService){
+function Controller($scope, $state, $stateParams, $q, AssignmentService, GroupService, SessionService){
     "ngInject";
 
     this.pageName = "Login";
@@ -9,23 +9,23 @@ function Controller($scope, $state, $stateParams, $q, AssignmentService, GroupSe
     this._$state = $state;
     this._$q = $q;
     this._GroupService = GroupService;
-    this.groupMembersCount = 0;
+    this._SessionService = SessionService;
+    this.groupMembers = [];
     this.membersLoginInfo = [];
     this.init();
 };
 
 Controller.prototype.init = function(){
     var self = this;
-    self.getGroupMembersCount();
+    self.getGroupMembers();
 };
 
-Controller.prototype.getGroupMembersCount = function(){
+Controller.prototype.getGroupMembers = function(){
     var self = this;
     self._GroupService.getGroupMembers(self.courseId, self.moduleId)
         .then(function(payload){
-            self.groupMembersCount = payload.members.length-1;
-            console.log("Get Group Members Count");
-            console.log(self.groupMembersCount);
+            self.groupMembers = payload.members;
+            self.fillMembers();
     }, function(err){
        self.error = err;
     });
@@ -62,10 +62,24 @@ Controller.prototype.groupCheckin = function(){
 
 };
 
+Controller.prototype.fillMembers = function(){
+    var self = this;
+    var user = self._SessionService.getUser();
+    for(var i = 0; i<self.groupMembers.length; i++) {
+    	if(self.groupMembers[i].email != user.email) {
+    		var member = {};
+    		member.email = self.groupMembers[i].email;
+    		member.firstName = self.groupMembers[i].firstName;
+    		member.lastName = self.groupMembers[i].lastName;
+    		self.membersLoginInfo.push(member);
+    	}
+    }
+};
+
 Controller.prototype.navToQuestions = function(loginError){
     var self = this;
     if(!loginError){
-        self._$state.go('app.course.assignment.questions', { groupId:self.groupId});
+        self._$state.go('app.course.assignment.questions', { groupId:self.groupId }, { location: 'replace' });
     };
 };
 
