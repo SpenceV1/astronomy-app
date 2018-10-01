@@ -12,4 +12,8 @@ public interface GradeService {
   public Map<String, Object> getGrade(String email, String moduleId);
 
   public Map<String, Object> viewStudentGrades(String email, String courseId);
+  
+  public Map<String, Object> getGroupGrade(String groupId, String moduleId);
+  
+  Map<String, Object> getGradeUniversal(String emailOrGroupId, String moduleId, boolean isGroupId);
 }

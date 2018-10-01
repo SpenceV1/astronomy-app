@@ -11,3 +11,7 @@
 .headerDetail {
 	padding-left: 2em;
 }
+
+.headerName {
+	width: 100%;
+}

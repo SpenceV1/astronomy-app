@@ -7,4 +7,15 @@ nav.questionsPaging {
     cursor: pointer;
 }
 
+div.assignment-description > div.ta-bind {
+    overflow: auto;
+    max-height: 400px;
+    border: solid;
+    border-color: lightgray;
+    margin-bottom: 20px;
+    border-radius: .25rem;
+    border-width: thin;
+    padding: 5px;
+}
+
 

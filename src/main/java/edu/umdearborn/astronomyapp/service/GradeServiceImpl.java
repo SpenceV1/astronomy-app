@@ -68,7 +68,7 @@ public class GradeServiceImpl implements GradeService {
         record.add(e.getEmail());
         Map<String, Object> studentGrades = viewStudentGrades(e.getEmail(), courseId);
         csvHeaderOrder.stream().forEachOrdered(f -> {
-          logger.info("Adding points for {} in module: '{}'", e, f);
+          //logger.info("Adding points for {} in module: '{}'", e, f);
           record.add(((Map<String, Object>) studentGrades.get(f)).get("pointsEarned"));
         });
         records.add(record);
@@ -150,61 +150,82 @@ public class GradeServiceImpl implements GradeService {
 
   @Override
   public Map<String, Object> getGrade(String email, String moduleId) {
-    logger.debug("Getting groupdId for module: '{}'", moduleId);
-    List<String> results = entityManager
-        .createQuery("select g.id from GroupMember gm join gm.moduleGroup g join g.module m "
-            + "join gm.courseUser cu join cu.user u where lower(u.email) = lower(:email) and "
-            + "m.id = :moduleId", String.class)
-        .setParameter("email", email).setParameter("moduleId", moduleId).getResultList();
+	  return getGradeUniversal(email, moduleId, false);
+  }
+  
+  @Override
+  public Map<String, Object> getGroupGrade(String groupId, String moduleId) {
+	  return getGradeUniversal(groupId, moduleId, true);
+  }
+  
+  @Override
+  public Map<String, Object> getGradeUniversal(String emailOrGroupId, String moduleId, boolean isGroupId) {
+	  	String groupId = emailOrGroupId;
+	  	if(!isGroupId) {
+	  		String email = emailOrGroupId;
+		    logger.debug("Getting groupdId for user '{}' in module: '{}'", email, moduleId);
+		    List<String> results = entityManager
+		        .createQuery("select g.id from GroupMember gm join gm.moduleGroup g join g.module m "
+		            + "join gm.courseUser cu join cu.user u where lower(u.email) = lower(:email) and "
+		            + "m.id = :moduleId", String.class)
+		        .setParameter("email", email).setParameter("moduleId", moduleId).getResultList();
+			if (ResultListUtil.hasResult(results)) {
+				groupId = results.get(0);
+			} else {
+				  logger.debug("User: '{}' has no group for module: '{}'", email, moduleId);
+				    return ImmutableMap.of("groupId", groupId, "pointsEarned", BigDecimal.ZERO, "submissionNumber", 0L,
+				        "finishedGrading", true);
+			}
+	  	}
 
-    if (ResultListUtil.hasResult(results)) {
+	      logger.debug("Getting submission number for group: '{}' for module: '{}'", groupId, moduleId);
+	      Long submissionNumber = Optional.ofNullable(entityManager.createQuery(
+	          "select max(a.submissionNumber) from Answer a join a.group g where g.id = :groupId",
+	          Long.class).setParameter("groupId", groupId).getSingleResult()).orElse(null);
 
-      logger.debug("Getting submission number for user: '{}' for module: '{}'", email, moduleId);
-      long submissionNumber = entityManager.createQuery(
-          "select coalesce(max(a.submissionNumber), 0) from Answer a join a.group g where g.id = :groupId",
-          Long.class).setParameter("groupId", results.get(0)).getSingleResult();
+	      //if (submissionNumber > 0L) {
+	      if(submissionNumber != null) {
+	        logger.debug("Getting points for group: '{}' for module: '{}'", groupId, moduleId);
+	        BigDecimal points = entityManager
+	            .createQuery(
+	                "select coalesce(sum(a.pointesEarned), 0) from Answer a join a.group g where g.id = :groupId "
+	                    + "and a.submissionNumber = :submissionNumber",
+	                BigDecimal.class)
+	            .setParameter("submissionNumber", submissionNumber)
+	            .setParameter("groupId", groupId).getSingleResult();
 
-      //if (submissionNumber > 0L) {
+	        logger.debug("Getting submission timestamp for group: '{}' for module: '{}'", groupId,
+	            moduleId);
+	        Date submissionTimestamp = entityManager
+	            .createQuery(
+	                "select a.submissionTimestamp from Answer a join a.group g where g.id = :groupId "
+	                    + "and a.submissionNumber = :submissionNumber",
+	                Date.class)
+	            .setParameter("submissionNumber", submissionNumber)
+	            .setParameter("groupId", groupId).setMaxResults(1).getSingleResult();
 
-        logger.debug("Getting points for user: '{}' for module: '{}'", email, moduleId);
-        BigDecimal points = entityManager
-            .createQuery(
-                "select coalesce(sum(a.pointesEarned), 0) from Answer a join a.group g where g.id = :groupId "
-                    + "and a.submissionNumber = :submissionNumber",
-                BigDecimal.class)
-            .setParameter("submissionNumber", submissionNumber)
-            .setParameter("groupId", results.get(0)).getSingleResult();
+	        logger.debug("Checking if instructor finished grading for group: '{}' for module: '{}'",
+	        		groupId, moduleId);
+	        boolean finishedGrading = entityManager
+	            .createQuery(
+	                "select count(a) = 0 from Answer a join a.group g where g.id = :groupId "
+	                    + "and a.submissionNumber = :submissionNumber and a.pointesEarned is null",
+	                Boolean.class)
+	            .setParameter("submissionNumber", submissionNumber)
+	            .setParameter("groupId", groupId).getSingleResult();
 
-        logger.debug("Getting submission timestamp for user: '{}' for module: '{}'", email,
-            moduleId);
-        Date submissionTimestamp = entityManager
-            .createQuery(
-                "select a.submissionTimestamp from Answer a join a.group g where g.id = :groupId "
-                    + "and a.submissionNumber = :submissionNumber",
-                Date.class)
-            .setParameter("submissionNumber", submissionNumber)
-            .setParameter("groupId", results.get(0)).setMaxResults(1).getSingleResult();
+	        logger.debug("Retruning grade for group: '{}' for module: '{}'", groupId, moduleId);
 
-        logger.debug("Checking if instructor finished grading for user: '{}' for module: '{}'",
-            email, moduleId);
-        boolean finishedGrading = entityManager
-            .createQuery(
-                "select count(a) = 0 from Answer a join a.group g where g.id = :groupId "
-                    + "and a.submissionNumber = :submissionNumber and a.pointesEarned is null",
-                Boolean.class)
-            .setParameter("submissionNumber", submissionNumber)
-            .setParameter("groupId", results.get(0)).getSingleResult();
+	        return ImmutableMap.of("groupId", groupId, "pointsEarned", points, "submissionTimestamp", submissionTimestamp,
+	            "submissionNumber", submissionNumber, "finishedGrading", finishedGrading);
+	      
+	      //}
 
-        logger.debug("Retruning grade for user: '{}' for module: '{}'", email, moduleId);
-
-        return ImmutableMap.of("pointsEarned", points, "submissionTimestamp", submissionTimestamp,
-            "submissionNumber", submissionNumber, "finishedGrading", finishedGrading);
-      //}
-
-    }
-    logger.debug("User: '{}' has no grade for module: '{}'", email, moduleId);
-    return ImmutableMap.of("pointsEarned", BigDecimal.ZERO, "submissionNumber", 0L,
-        "finishedGrading", true);
+	    } else {
+		    logger.debug("Group: '{}' has no submission for module: '{}'", groupId, moduleId);
+		    return ImmutableMap.of("groupId", groupId, "pointsEarned", BigDecimal.ZERO, "submissionNumber", 0L,
+		        "finishedGrading", true);
+	    }
   }
 
   @Override

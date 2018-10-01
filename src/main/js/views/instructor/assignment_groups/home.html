@@ -7,24 +7,29 @@
         <table class="table table-hover">
             <colgroup>
                 <col span="1" style="width:50%">
-                <col span="1" style="width:50%">
             </colgroup>
         <thead>
             <tr>
             <th>Group</th>
+            <th>&nbsp;</th>
+            <th>Points</th>
+            <th>Status</th>
             <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="(group, users) in assignmentGroupsCtrl.groups">
+            <tr ng-repeat="(groupId, group) in assignmentGroupsCtrl.groups">
                 <td>
                     <ul class="list-group" style="margin-bottom:0">
-                        <li class="list-group-item" ng-repeat="user in users" >
+                        <li class="list-group-item" ng-repeat="user in group.members" >
                             {{ user.firstName }} , {{ user.lastName }}
                         </li>
                     </ul>
                 </td>
-                <td style="vertical-align:middle"><a ng-click="assignmentGroupsCtrl.navToQuestions(group)" href="">Grade</a></td>
+                <td>&nbsp;</td>
+                <td style="vertical-align:middle">{{ group.grade.pointsEarned }}</td>
+                <td style="vertical-align:middle">{{ group.grade.finishedGrading ? "Graded" : "Not Graded" }}</td>
+                <td style="vertical-align:middle"><a ng-click="assignmentGroupsCtrl.navToQuestions(groupId)" href="">Grade</a></td>
             </tr>
         </tbody>
         </table>

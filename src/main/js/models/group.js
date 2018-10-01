@@ -57,6 +57,24 @@ GroupService.prototype.getAssignmentGroups = function(courseId, moduleId){
     });
 }
 
+//Purpose: Get Assignment group's grades
+GroupService.prototype.getAssignmentGrades = function(courseId, moduleId){
+    var self = this;
+    var config = self.getConfig();
+    var url = self._appSettings.API.basePath
+    + '/rest/instructor/course/'
+    + courseId + '/module/'
+    + moduleId + "/group-grades"
+
+    return self._$http
+        .get(url, config)
+        .then(function(res){
+        console.log("Get Assignment Groups Grades")
+        console.log(res)
+        return res.data;
+    });
+}
+
 GroupService.prototype.addGroupMember = function(courseId, moduleId, groupId, newMemberId){
     var self = this;
     var config = self.getConfig();

@@ -435,6 +435,26 @@ public class ModuleGroupController {
     return groupService.getGroups(moduleId);
   }
 
+  @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/group-grades",
+	      method = GET)
+	  public Map<String, Object> getModuleGrades(@PathVariable("courseId") String courseId,
+	      @PathVariable("moduleId") String moduleId,
+	      Principal principal) {
+
+	    acl.enforceInCourse(principal.getName(), courseId);
+	    acl.enforceModuleClosed(moduleId);
+	    
+	    Map<String, Object> gradesMap = new HashMap<String, Object>();
+	    Map<String, List<CourseUser>> moduleGroups = groupService.getGroups(moduleId);
+	    for (Map.Entry<String, List<CourseUser>> group : moduleGroups.entrySet()) {
+	    	autoGrade(group.getKey());
+	    	Map<String, Object> grade = gradeService.getGroupGrade(group.getKey(), moduleId);
+	    	gradesMap.put((String)grade.get("groupId"), grade);
+	    }
+	    
+	    return gradesMap;
+	  }
+  
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}/answers",
       method = GET)
   public Map<String, Answer> getAnswers(@PathVariable("courseId") String courseId,
@@ -444,43 +464,47 @@ public class ModuleGroupController {
     acl.enforceInCourse(principal.getName(), courseId);
     acl.enforceGroupInCourse(groupId, courseId);
     acl.enforceModuleClosed(moduleId);
-
-    Optional.ofNullable(groupService.getAnswers(groupId, false)).orElse(new ArrayList<Answer>())
-        .stream().filter(a -> a.getQuestion().isMachineGradeable() && a.getPointesEarned() == null)
-        .forEach(a -> {
-          BigDecimal points;
-          if (autoGradeService.checkAnswer(a.getId())) {
-            logger.debug("Answer: '{}' with value '{}' for question: '{}' is not correct",
-                a.getId(), a.getValue(), a.getQuestion().getId());
-            points = a.getQuestion().getPoints();
-          } else {
-            logger.debug("Answer: '{}' with value '{}' for question: '{}' is correct", a.getId(),
-                a.getValue(), a.getQuestion().getId());
-            points = BigDecimal.ZERO;
-          }
-          
-          String comment = "";
-          if (QuestionType.NUMERIC.equals(a.getQuestion().getQuestionType())) {
-        	  if(autoGradeService.checkUnitAnswer(a.getId())) {
-        		  BigDecimal unitPoints = autoGradeService.getNumericUnitPoints(a.getQuestion().getId());
-        		  if(points.compareTo(BigDecimal.ZERO) == 0 && unitPoints.compareTo(BigDecimal.ZERO) == 1) {
-        			  comment = unitPoints.stripTrailingZeros().toPlainString() + " points earned for correct unit.";
-        		  }
-        		  points = points.add(unitPoints);
-        	  } else {
-        		  if(points.compareTo(BigDecimal.ZERO) > 0) {
-        			  comment = points.stripTrailingZeros().toPlainString() + " points earned for correct numeric value.";
-        		  }
-        	  }
-          }
-          
-          autoGradeService.setPointsEarned(a.getId(), points, new String[] { comment });
-          
-        });
+    
+    autoGrade(groupId);
 
     return Optional.ofNullable(groupService.getAnswers(groupId, false))
         .orElse(new ArrayList<Answer>()).parallelStream()
         .collect(Collectors.toMap(a -> a.getQuestion().getId(), a -> a));
+  }
+  
+  private void autoGrade(String groupId) {
+	    Optional.ofNullable(groupService.getAnswers(groupId, false)).orElse(new ArrayList<Answer>())
+      .stream().filter(a -> a.getQuestion().isMachineGradeable() && a.getPointesEarned() == null)
+      .forEach(a -> {
+        BigDecimal points;
+        if (autoGradeService.checkAnswer(a.getId())) {
+          logger.debug("Answer: '{}' with value '{}' for question: '{}' is not correct",
+              a.getId(), a.getValue(), a.getQuestion().getId());
+          points = a.getQuestion().getPoints();
+        } else {
+          logger.debug("Answer: '{}' with value '{}' for question: '{}' is correct", a.getId(),
+              a.getValue(), a.getQuestion().getId());
+          points = BigDecimal.ZERO;
+        }
+        
+        String comment = "";
+        if (QuestionType.NUMERIC.equals(a.getQuestion().getQuestionType())) {
+      	  if(autoGradeService.checkUnitAnswer(a.getId())) {
+      		  BigDecimal unitPoints = autoGradeService.getNumericUnitPoints(a.getQuestion().getId());
+      		  if(points.compareTo(BigDecimal.ZERO) == 0 && unitPoints.compareTo(BigDecimal.ZERO) == 1) {
+      			  comment = unitPoints.stripTrailingZeros().toPlainString() + " points earned for correct unit.";
+      		  }
+      		  points = points.add(unitPoints);
+      	  } else {
+      		  if(points.compareTo(BigDecimal.ZERO) > 0) {
+      			  comment = points.stripTrailingZeros().toPlainString() + " points earned for correct numeric value.";
+      		  }
+      	  }
+        }
+        
+        autoGradeService.setPointsEarned(a.getId(), points, new String[] { comment });
+        
+      });
   }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}",

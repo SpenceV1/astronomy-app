@@ -1,5 +1,7 @@
 <h4>Description</h4>
-<p>{{ assignmentDetails.assignment.humanReadableText }}</p>
+<div class="assignment-description">
+	<div ta-bind ng-model="assignmentDetails.assignment.humanReadableText"></div>
+</div>
 <div ng-if="assignmentDetails.grade.finishedGrading">
     <h4>Grade</h4>
     <p>Points Earned: {{ assignmentDetails.grade.pointsEarned }} </p>

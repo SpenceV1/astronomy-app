@@ -3,7 +3,7 @@
     {{ assignmentsEditCtrl.pageName }}
 </h2>
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div uib-alert class="alert alert-success alert-fade" close="assignmentsEditCtrl._AlertService.closeSuccessAlert(assignmentsEditCtrl)" dismiss-on-timeout="3000" ng-if="assignmentsEditCtrl.success">
             {{ assignmentsEditCtrl.success }}
         </div>
@@ -65,14 +65,7 @@
             </div>
             <div class="form-group" ng-class="{ 'has-error' : assignmentForm.description.$invalid && !assignmentForm.description.$pristine }">
                 <label>Description</label>
-                <textarea class="form-control"
-                          rows="3"
-                          name="description"
-                          ng-model="assignmentsEditCtrl.assignment.humanReadableText"
-                          required
-                          placeholder="Description"
-                          >
-                </textarea>
+                <text-angular name="description" ng-model="assignmentsEditCtrl.assignment.humanReadableText" required></text-angular>
                 <span ng-show="assignmentForm.description.$invalid && !assignmentForm.description.$pristine" class="help-block">Description is Required</span>
             </div>
             <button type="submit" class="btn btn-primary" ng-disabled="assignmentForm.$invalid">Submit</button>
