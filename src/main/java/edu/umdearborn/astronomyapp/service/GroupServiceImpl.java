@@ -461,7 +461,15 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public Map<String, List<CourseUser>> getGroups(String moduleId) {
+  public List<String> getGroups(String moduleId) {
+    return entityManager
+        .createQuery("select g.id from ModuleGroup g join g.module m where m.id = :moduleId",
+            String.class)
+        .setParameter("moduleId", moduleId).getResultList();
+  }
+  
+  @Override
+  public Map<String, List<CourseUser>> getGroupsWithMembers(String moduleId) {
     return entityManager
         .createQuery("select g.id from ModuleGroup g join g.module m where m.id = :moduleId",
             String.class)

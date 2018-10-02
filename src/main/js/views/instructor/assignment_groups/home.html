@@ -2,6 +2,16 @@
 <h4 >
     {{ assignmentGroupsCtrl.pageName }}
 </h4>
+<button class="btn btn-primary" ng-click="assignmentGroupsCtrl.machineGrade()">Machine Grade</button>
+<div uib-alert class="alert alert-success alert-fade" close="assignmentGroupsCtrl._AlertService.closeSuccessAlert(assignmentGroupsCtrl)" dismiss-on-timeout="3000" ng-if="assignmentGroupsCtrl.success">
+    {{ assignmentGroupsCtrl.success }}
+</div>
+<div uib-alert class="alert alert-danger alert-fade" close="assignmentGroupsCtrl._AlertService.closeErrorAlert(assignmentGroupsCtrl)" dismiss-on-timeout="3000" ng-if="assignmentGroupsCtrl.error">
+    {{ assignmentGroupsCtrl.error }}
+</div>
+ <div uib-alert class="alert alert-info alert-fade" ng-if="assignmentGroupsCtrl.alert">
+    {{ assignmentGroupsCtrl.alert }}
+</div>
 <div class="row">
     <div class="col-md-12">
         <table class="table table-hover">

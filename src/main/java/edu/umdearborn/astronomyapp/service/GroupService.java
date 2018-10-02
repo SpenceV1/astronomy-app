@@ -37,7 +37,9 @@ public interface GroupService {
 
   public List<CourseUser> getFreeUsers(String courseId, String moduleId);
 
-  public Map<String, List<CourseUser>> getGroups(String moduleId);
+  public List<String>  getGroups(String moduleId);
+  
+  public Map<String, List<CourseUser>> getGroupsWithMembers(String moduleId);
 
   public List<Answer> gradeAnswers(Map<String, Map<String, String>> answers);
 

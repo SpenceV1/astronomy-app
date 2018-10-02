@@ -432,7 +432,7 @@ public class ModuleGroupController {
 
     acl.enforceInCourse(principal.getName(), courseId);
 
-    return groupService.getGroups(moduleId);
+    return groupService.getGroupsWithMembers(moduleId);
   }
 
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/group-grades",
@@ -444,15 +444,24 @@ public class ModuleGroupController {
 	    acl.enforceInCourse(principal.getName(), courseId);
 	    acl.enforceModuleClosed(moduleId);
 	    
-	    Map<String, Object> gradesMap = new HashMap<String, Object>();
-	    Map<String, List<CourseUser>> moduleGroups = groupService.getGroups(moduleId);
-	    for (Map.Entry<String, List<CourseUser>> group : moduleGroups.entrySet()) {
-	    	autoGrade(group.getKey());
-	    	Map<String, Object> grade = gradeService.getGroupGrade(group.getKey(), moduleId);
-	    	gradesMap.put((String)grade.get("groupId"), grade);
+	    return gradeService.getModuleGrades(moduleId);
+	  }
+  
+  @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/grade-all",
+	      method = GET)
+	  public Map<String, Object> autoGradeModule(@PathVariable("courseId") String courseId,
+	      @PathVariable("moduleId") String moduleId,
+	      Principal principal) {
+
+	    acl.enforceInCourse(principal.getName(), courseId);
+	    acl.enforceModuleClosed(moduleId);
+	    
+	    List<String> moduleGroups = groupService.getGroups(moduleId);
+	    for (String groupId : moduleGroups) {
+	    	autoGrade(groupId);
 	    }
 	    
-	    return gradesMap;
+	    return gradeService.getModuleGrades(moduleId);
 	  }
   
   @RequestMapping(value = INSTRUCTOR_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}/answers",

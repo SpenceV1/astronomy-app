@@ -7,12 +7,14 @@ import java.io.Writer;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 
 import org.apache.commons.csv.CSVFormat;
@@ -178,54 +180,64 @@ public class GradeServiceImpl implements GradeService {
 			}
 	  	}
 
-	      logger.debug("Getting submission number for group: '{}' for module: '{}'", groupId, moduleId);
-	      Long submissionNumber = Optional.ofNullable(entityManager.createQuery(
-	          "select max(a.submissionNumber) from Answer a join a.group g where g.id = :groupId",
-	          Long.class).setParameter("groupId", groupId).getSingleResult()).orElse(null);
-
-	      //if (submissionNumber > 0L) {
-	      if(submissionNumber != null) {
-	        logger.debug("Getting points for group: '{}' for module: '{}'", groupId, moduleId);
-	        BigDecimal points = entityManager
-	            .createQuery(
-	                "select coalesce(sum(a.pointesEarned), 0) from Answer a join a.group g where g.id = :groupId "
-	                    + "and a.submissionNumber = :submissionNumber",
-	                BigDecimal.class)
-	            .setParameter("submissionNumber", submissionNumber)
-	            .setParameter("groupId", groupId).getSingleResult();
-
-	        logger.debug("Getting submission timestamp for group: '{}' for module: '{}'", groupId,
-	            moduleId);
-	        Date submissionTimestamp = entityManager
-	            .createQuery(
-	                "select a.submissionTimestamp from Answer a join a.group g where g.id = :groupId "
-	                    + "and a.submissionNumber = :submissionNumber",
-	                Date.class)
-	            .setParameter("submissionNumber", submissionNumber)
-	            .setParameter("groupId", groupId).setMaxResults(1).getSingleResult();
-
-	        logger.debug("Checking if instructor finished grading for group: '{}' for module: '{}'",
-	        		groupId, moduleId);
-	        boolean finishedGrading = entityManager
-	            .createQuery(
-	                "select count(a) = 0 from Answer a join a.group g where g.id = :groupId "
-	                    + "and a.submissionNumber = :submissionNumber and a.pointesEarned is null",
-	                Boolean.class)
-	            .setParameter("submissionNumber", submissionNumber)
-	            .setParameter("groupId", groupId).getSingleResult();
-
-	        logger.debug("Retruning grade for group: '{}' for module: '{}'", groupId, moduleId);
-
-	        return ImmutableMap.of("groupId", groupId, "pointsEarned", points, "submissionTimestamp", submissionTimestamp,
-	            "submissionNumber", submissionNumber, "finishedGrading", finishedGrading);
-	      
-	      //}
-
-	    } else {
-		    logger.debug("Group: '{}' has no submission for module: '{}'", groupId, moduleId);
-		    return ImmutableMap.of("groupId", groupId, "pointsEarned", BigDecimal.ZERO, "submissionNumber", 0L,
+        logger.debug("Getting points for group: '{}' for module: '{}'", groupId, moduleId);
+        Object[] submission = Optional.ofNullable(entityManager
+            .createQuery(
+                "select coalesce(sum(a.pointesEarned), 0), "
+                + "max(a.submissionTimestamp), "
+                + "case when (sum(case when a.pointesEarned is null then 1 else 0 end) > 0) then false else true end, " //equal to "bool_and(pointes_earned is not null)
+                + "max(a.submissionNumber) from Answer a join a.group g where g.id = :groupId",
+                Object[].class)
+            .setParameter("groupId", groupId).getSingleResult()).orElse(null);
+        
+        if(submission != null && submission[3] != null) { //submission number != null
+        	BigDecimal pointsEarned = (BigDecimal)submission[0];
+        	Date submissionTimestamp = (Date)submission[1];
+        	Boolean finishedGrading = (Boolean)submission[2];
+        	Long submissionNumber = (Long)submission[3];
+        	
+        	return ImmutableMap.of("groupId", groupId, "pointsEarned", pointsEarned, "submissionTimestamp", submissionTimestamp,
+    	            "submissionNumber", submissionNumber, "finishedGrading", finishedGrading);
+        	//logger.info("Points Earned: {}, Timestamp: {}, Graded {}, Submission: {}", pointsEarned, submissionTimestamp, graded, submissionNumber);
+        } else {
+        	//logger.info("No submission for group");
+        }
+        
+        return ImmutableMap.of("groupId", groupId, "pointsEarned", BigDecimal.ZERO, "submissionNumber", 0L,
 		        "finishedGrading", true);
-	    }
+  }
+  
+  @Override
+  public Map<String, Object> getModuleGrades(String moduleId) {
+	  	Map<String, Object> gradesMap = new HashMap<String, Object>();
+	  	
+        List<Object[]> gradesResult = entityManager
+            .createQuery(
+                "select g.id, "
+            	+ "coalesce(sum(a.pointesEarned), 0), "
+                + "max(a.submissionTimestamp), "
+                + "case when (sum(case when a.pointesEarned is null then 1 else 0 end) > 0) then false else true end, " //equal to "bool_and(pointes_earned is not null)
+                + "max(a.submissionNumber) from Answer a join a.group g join g.module m where m.id = :moduleId GROUP BY g.id",
+                Object[].class)
+            .setParameter("moduleId", moduleId)
+            .getResultList();
+        
+        if(ResultListUtil.hasResult(gradesResult)) {
+        	for(Object[] groupGrade : gradesResult) {
+        		String groupId = (String)groupGrade[0];
+            	BigDecimal pointsEarned = (BigDecimal)groupGrade[1];
+            	Date submissionTimestamp = (Date)groupGrade[2];
+            	Boolean finishedGrading = (Boolean)groupGrade[3];
+            	Long submissionNumber = (Long)groupGrade[4];
+            	
+            	Map<String, Object> grade = ImmutableMap.of("groupId", groupId, "pointsEarned", pointsEarned, "submissionTimestamp", submissionTimestamp,
+        	            "submissionNumber", submissionNumber, "finishedGrading", finishedGrading);
+            	
+            	gradesMap.put((String)grade.get("groupId"), grade);
+        	}
+        }
+        
+        return gradesMap;
   }
 
   @Override
