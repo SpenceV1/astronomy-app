@@ -188,6 +188,10 @@ Controller.prototype.saveAnswers = function(newPage){
         		}
         	}
             self.updateGatekeeperLocks();
+            //navigate to page if specified
+            if(newPage != undefined) {
+            	self.getPageQuestions(newPage);
+            }
     }, function(err){
        self.error = "ERROR saving the answers";
     });
@@ -234,8 +238,10 @@ Controller.prototype.submit = function(){
     var self = this;
     var confirmation = "Are you sure you want to submit?";
     var footNote = "Please make sure you save before you submit!";
-    var modalInstance = self._ConfirmationService.open("", confirmation, footNote);
-    self.saveAnswers(self.currentPage);
+    var confirmOption = "Submit assignment";
+    var rejectOption = "Go back to assignment";
+    var modalInstance = self._ConfirmationService.open("", confirmation, footNote, confirmOption, rejectOption);
+    self.saveAnswers();
     modalInstance.result.then(function(){
 	    	self._QuestionService.saveAnswers(self.courseId, self.moduleId, self.groupId, self.data)
 	        .then(function(payload){
@@ -260,10 +266,38 @@ Controller.prototype.submit = function(){
 
 Controller.prototype.getPage = function(newPage){
     var self = this;
+    if(self.checkForChangesInAnswers() == false) {
+	    if(newPage >= self.minPage && newPage <= self.maxPage && newPage != self.currentPage){
+	        self.getQuestions(newPage);
+	    }
+	} else {
+		var modalInstance = self._ConfirmationService.open("", "Unsaved changes!", "You have unsaved changes! Do you want to save this page?", "Save and continue", "Discard changes");
+		modalInstance.result.then(function(){
+			self.saveAnswers(newPage);
+    }, function(){
+    	//discard changes
+    	self.getPageQuestions(newPage);
+    });
+	}
+};
+
+Controller.prototype.getPageQuestions = function(newPage){
+    var self = this;
     if(newPage >= self.minPage && newPage <= self.maxPage && newPage != self.currentPage){
         self.getQuestions(newPage);
     }
-}
+};
+
+Controller.prototype.checkForChangesInAnswers = function() {
+	var self = this;
+	for(var id in self.data) {
+	    if(!(id in self.savedAnswers) || self.savedAnswers[id].value == undefined ||
+	    		self.savedAnswers[id].value.answer == undefined || self.data[id].answer != self.savedAnswers[id].value.answer) {
+			return true;
+	    }
+	}
+	return false;
+};
 
 Controller.prototype.closeErrorAlert = function(){
 	self = this;

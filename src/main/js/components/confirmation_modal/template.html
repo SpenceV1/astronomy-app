@@ -5,6 +5,6 @@
     {{ $modalCtrl.footnoteText }}
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="$modalCtrl.confirm()">Yes</button>
-    <button class="btn btn-warning" type="button" ng-click="$modalCtrl.reject()">No</button>
+    <button class="btn btn-primary" type="button" ng-click="$modalCtrl.confirm()">{{ $modalCtrl.confirmOption ? $modalCtrl.confirmOption : "Yes" }}</button>
+    <button class="btn btn-warning" type="button" ng-click="$modalCtrl.reject()">{{ $modalCtrl.rejectOption ? $modalCtrl.rejectOption : "No" }}</button>
 </div>

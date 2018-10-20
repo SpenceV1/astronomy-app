@@ -6,7 +6,7 @@ function Service($uibModal, $document){
     this._$document = $document;
 }
 
-Service.prototype.open = function(size, confirmationText, footnoteText){
+Service.prototype.open = function(size, confirmationText, footnoteText, confirmOption, rejectOption){
     var self = this;
     var modalInstance = self._$uibModal.open({
         animation: true,
@@ -20,6 +20,12 @@ Service.prototype.open = function(size, confirmationText, footnoteText){
             },
             footnoteText : function() {
                 return footnoteText;
+            },
+            confirmOption : function() {
+                return confirmOption;
+            },
+            rejectOption : function() {
+                return rejectOption;
             }
         }
     });

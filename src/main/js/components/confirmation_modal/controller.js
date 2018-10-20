@@ -1,10 +1,12 @@
 
-function Controller($state, $uibModalInstance, confirmationText, footnoteText){
+function Controller($state, $uibModalInstance, confirmationText, footnoteText, confirmOption, rejectOption){
     "ngInject";
     this._$uibModalInstance = $uibModalInstance;
     this._$state = $state;
     this.text = confirmationText;
     this.footnoteText = footnoteText;
+    this.confirmOption = confirmOption;
+    this.rejectOption = rejectOption;
 }
 
 Controller.prototype.confirm = function(){
