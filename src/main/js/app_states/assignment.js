@@ -11,6 +11,9 @@ var states = [
             'assignmentContent@app.course.assignment' : {
                 templateUrl : 'views/student/assignment_details/home.html'
             }
+        },
+        params : {
+            submitted: false
         }
     },
     {
@@ -79,7 +82,8 @@ var states = [
         params : {
             viewOnly : false,
             grading : false,
-            currentPage : 1
+            currentPage : 1,
+            leaving: false
         }
     },
     {

@@ -6,8 +6,23 @@ function onStateChange($rootScope, $state, $q, AuthService, SessionService, Grou
         if(SessionService.getUser()){
             if(fromState
                 && fromState.name == 'app.course.assignment.questions'
-                && toState.name != fromState.name){
-                GroupService.groupCheckout(fromParams.courseId, fromParams.moduleId, fromParams.groupId)
+                && toState.name != fromState.name && fromParams.leaving == false){
+            	if(toParams.submitted == true) {
+            		//submitting assignment
+            		GroupService.groupCheckout(fromParams.courseId, fromParams.moduleId, fromParams.groupId);
+            	} else {
+            		var leaveAssignment = confirm('Leaving this assignment will log out your group.\nAny unsaved changes will also be lost.\nPress "OK" to leave or "Cancel" to return to the assignment.');
+                	if(leaveAssignment){
+                		//leaving assignment
+                		evt.preventDefault();
+                    	GroupService.groupCheckout(fromParams.courseId, fromParams.moduleId, fromParams.groupId);
+                    	fromParams.leaving = true;
+                    	$state.go(toState, toParams, {location: 'replace'});
+                    }else {
+                    	//continuing assignment
+                    	evt.preventDefault();
+                    }
+            	}
             }
 
             //redirect to default state, the courses page

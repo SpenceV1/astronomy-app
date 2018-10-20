@@ -241,7 +241,7 @@ Controller.prototype.submit = function(){
 	        .then(function(payload){
 	            self.savedAnswers = payload;
 	            self.lastSaved = new Date();
-	            self._$state.go('app.course.assignment', { moduleId: self.moduleId }, { reload:true });
+	            self._$state.go('app.course.assignment', { moduleId: self.moduleId, submitted: true }, { reload:true });
 	    }, function(err){
 	       self.error = "ERROR submitting the assignment";
 	    });
