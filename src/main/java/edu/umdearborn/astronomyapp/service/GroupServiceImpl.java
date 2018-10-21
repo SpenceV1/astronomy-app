@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
@@ -32,6 +33,7 @@ import edu.umdearborn.astronomyapp.entity.NumericQuestion;
 import edu.umdearborn.astronomyapp.entity.Question;
 import edu.umdearborn.astronomyapp.entity.Question.QuestionType;
 import edu.umdearborn.astronomyapp.util.ResultListUtil;
+import edu.umdearborn.astronomyapp.util.json.JsonDecorator;
 
 @Service
 @Transactional
@@ -475,6 +477,34 @@ public class GroupServiceImpl implements GroupService {
             String.class)
         .setParameter("moduleId", moduleId).getResultList().parallelStream()
         .collect(Collectors.toMap(e -> e, e -> getUsersInGroup(e)));
+  }
+  
+  @Override
+  public JsonDecorator<String> getGroupModuleDetails(String groupId) {
+
+    TypedQuery<Module> moduleQuery =
+        entityManager.createQuery("select m from ModuleGroup g join g.module m where g.id = :groupId", Module.class);
+    moduleQuery.setParameter("groupId", groupId);
+    List<Module> resultList = moduleQuery.getResultList();
+
+    if (ResultListUtil.hasResult(resultList)) {
+      JsonDecorator<String> decorator = new JsonDecorator<>();
+
+      TypedQuery<Long> questionCountQuery =
+          entityManager.createQuery("select count(q) from Question q join q.page p join "
+              + "p.module m where m.id = :moduleId", Long.class);
+      questionCountQuery.setParameter("moduleId", resultList.get(0).getId());
+      decorator.addProperty("numQuestion", questionCountQuery.getSingleResult());
+      
+      long countAnswered = entityManager.createQuery(
+    	        "select count(a) from Answer a join a.group g where g.id = :groupId and a.value <> ''",
+    	        Long.class).setParameter("groupId", groupId).getSingleResult();
+      decorator.addProperty("numAnswered", countAnswered);
+
+      return decorator;
+    }
+    
+    return null;
   }
 
 }

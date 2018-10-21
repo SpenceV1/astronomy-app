@@ -166,6 +166,21 @@ GroupService.prototype.groupCheckout = function(courseId, moduleId, groupId){
     });
 };
 
+GroupService.prototype.getGroupAssignmentDetails = function(courseId, moduleId, groupId){
+    var self = this;
+    var config = self.getConfig();
+    var url = self._appSettings.API.basePath + '/rest/student/course/'+
+        courseId+ '/module/'
+        + moduleId + "/group/"
+        + groupId + "/details";
+    url = encodeURI(url);
+    return self._$http
+        .get(url, config)
+        .then(function(res){
+        return res.data;
+    });
+};
+
 GroupService.prototype.getLock = function(courseId, moduleId, groupId, pageNum){
     var self = this;
     var config = self.getConfig();

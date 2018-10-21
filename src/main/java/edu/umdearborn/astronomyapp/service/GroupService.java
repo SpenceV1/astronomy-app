@@ -5,7 +5,9 @@ import java.util.Map;
 
 import edu.umdearborn.astronomyapp.entity.Answer;
 import edu.umdearborn.astronomyapp.entity.CourseUser;
+import edu.umdearborn.astronomyapp.entity.Module;
 import edu.umdearborn.astronomyapp.entity.ModuleGroup;
+import edu.umdearborn.astronomyapp.util.json.JsonDecorator;
 
 public interface GroupService {
 
@@ -42,5 +44,7 @@ public interface GroupService {
   public Map<String, List<CourseUser>> getGroupsWithMembers(String moduleId);
 
   public List<Answer> gradeAnswers(Map<String, Map<String, String>> answers);
+
+  public JsonDecorator<String> getGroupModuleDetails(String groupId);
 
 }

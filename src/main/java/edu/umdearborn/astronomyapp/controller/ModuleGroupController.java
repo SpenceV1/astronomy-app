@@ -169,6 +169,24 @@ public class ModuleGroupController {
   }
 
   @RequestMapping(
+	      value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}/details",
+	      method = GET)
+	  public JsonDecorator<String> getGroupDetails(@PathVariable("courseId") String courseId,
+	      @PathVariable("moduleId") String moduleId, @PathVariable("groupId") String groupId,
+	      HttpSession session, Principal principal) {
+
+	    String courseUserId = HttpSessionUtil.getCourseUserId(session, courseId);
+
+	    acl.enforceInCourse(principal.getName(), courseId, courseUserId);
+	    acl.enforceIsCourseRole(principal.getName(), courseId,
+	        Arrays.asList(CourseUser.CourseRole.STUDENT));
+	    acl.enforceGroupInCourse(groupId, courseId);
+	    acl.enforceInGroup(courseUserId, groupId);
+	    
+	    return groupService.getGroupModuleDetails(groupId);
+	  }
+  
+  @RequestMapping(
       value = STUDENT_PATH + "/course/{courseId}/module/{moduleId}/group/{groupId}/checkin",
       method = GET)
   public JsonDecorator<List<String>> getCheckinStatus(@PathVariable("courseId") String courseId,

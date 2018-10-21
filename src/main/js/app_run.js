@@ -6,7 +6,7 @@ function onStateChange($rootScope, $state, $q, AuthService, SessionService, Grou
         if(SessionService.getUser()){
             if(fromState
                 && fromState.name == 'app.course.assignment.questions'
-                && toState.name != fromState.name && fromParams.leaving == false){
+                && toState.name != fromState.name && fromParams.leaving == false && fromParams.viewOnly == false){
             	if(toParams.submitted == true) {
             		//submitting assignment
             		GroupService.groupCheckout(fromParams.courseId, fromParams.moduleId, fromParams.groupId);

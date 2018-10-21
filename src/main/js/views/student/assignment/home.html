@@ -11,10 +11,14 @@
         <h4>Sections: {{ assignmentDetails.assignment.numPages }}</h4>
     </div>
     <div class="headerDetail">
-        <h4>Points: {{ assignmentDetails.assignment.points }}</h4>
+        <h4>Points Possible: {{ assignmentDetails.assignment.points }}</h4>
+    </div>
+    <div class="headerDetail">
+        <h4>
+            Questions Answered: {{ assignmentDetails.progress.numAnswered ? assignmentDetails.progress.numAnswered : 0 }} / {{ assignmentDetails.progress.numQuestion ? assignmentDetails.progress.numQuestion : assignmentDetails.assignment.numQuestion }}
+        </h4>
     </div>
 </div>
-
 <div ui-view="assignmentContent" ></div>
 
 

@@ -12,6 +12,7 @@ function Controller($scope, $state, $stateParams, AssignmentService, GroupServic
     this._GroupService = GroupService;
     this.assignment = {};
     this.grade = {};
+    this.progress = {};
     this.assignmentMembers = [];
     this.finalized = null;
     this.canStart = false;
@@ -66,6 +67,16 @@ Controller.prototype.getAssignmentDetails = function(){
     });
 };
 
+Controller.prototype.getGroupAssignmentDetails = function(){
+    var self = this;
+    self._GroupService.getGroupAssignmentDetails(self.courseId, self.moduleId, self.groupId)
+        .then(function(payload){
+            self.progress = payload;
+    }, function(err){
+       self.error = err;
+    });
+};
+
 Controller.prototype.getAssignmentGrade = function(){
     var self = this;
     self._AssignmentService.getAssignmentGrade(self.courseId, self.moduleId)
@@ -84,6 +95,7 @@ Controller.prototype.getGroup = function(){
                 self.assignmentMembers = payload.members;
                 self.groupId = payload.id;
                 self.finalized = payload.isFinalized;
+                self.getGroupAssignmentDetails();
             } else {
                 self.finalized = false;
             }

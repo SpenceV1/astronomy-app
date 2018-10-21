@@ -192,6 +192,7 @@ Controller.prototype.saveAnswers = function(newPage){
             if(newPage != undefined) {
             	self.getPageQuestions(newPage);
             }
+            self._$scope.assignmentDetails.getGroupAssignmentDetails();
     }, function(err){
        self.error = "ERROR saving the answers";
     });

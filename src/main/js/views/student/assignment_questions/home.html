@@ -52,6 +52,10 @@
             </div>
         </div>
     </div>
+     <div uib-alert class="alert alert-danger" ng-if="assignmentQuestions.gateLocked[assignmentQuestions.currentPage]">
+    	One or more of the questions on this page is a gatekeeper (Denoted by a lock icon). Gatekeeper questions must be correct before moving on.<br>
+    	You may attempt the question(s) as many times as needed but make sure you save the page after changing your answer to unlock the next page.
+	</div>
     <div class="row" ng-if="assignmentQuestions.editable || assignmentQuestions.grading">
         <div class="col-md-12">
             <div class="pull-left" >
