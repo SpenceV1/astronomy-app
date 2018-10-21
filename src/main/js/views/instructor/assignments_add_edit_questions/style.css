@@ -21,3 +21,10 @@
 .dndDraggingSource{
 	display: none;
 }
+
+td > div.ta-bind {
+    max-height: 7em;
+    width: 25em;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

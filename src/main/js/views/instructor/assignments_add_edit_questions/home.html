@@ -45,7 +45,7 @@
         <uib-accordian-group heading="Question {{ $index + 1 }}" style="cursor: pointer">
             <tr ng-repeat="question in questionsEditCtrl.questions" dnd-draggable="question" dnd-moved="questionsEditCtrl.questions.splice($index, 1)">
                 <td> <span class="drag-handle">:::</span></td>
-                <td title="{{question.humanReadableText}}">Question {{ $index + 1 }}</td>
+                <td><div ta-bind ng-model="question.humanReadableText"></div></td>
                 <td> {{ question.pageItemType }}</td>
                 <td> {{ question.questionType }}</td>
                 <td> {{ question.points + question.unitPoints }}</td>
